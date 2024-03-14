@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 
 import com.example.model.product;
 import com.example.shop_app.AddProduct;
+import com.example.shop_app.CategoryDiscount;
 import com.example.shop_app.Main_menu;
 import com.example.shop_app.R;
 import com.example.shop_app.productAdapter;
@@ -150,9 +151,9 @@ public class ProductFragment extends Fragment {
         btn_cate_discount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent categoryDiscount = new Intent(view.getContext(), CategoryDiscount.class);
-//                categoryDiscount.putExtra("user_id", u_id);
-//                startActivity(categoryDiscount);
+                Intent categoryDiscount = new Intent(view.getContext(), CategoryDiscount.class);
+                categoryDiscount.putExtra("user_id", u_id);
+                startActivity(categoryDiscount);
             }
         });
     }
