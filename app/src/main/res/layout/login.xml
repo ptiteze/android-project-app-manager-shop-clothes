@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="281dp"
+        android:layout_height="244dp"
+        android:layout_marginStart="46dp"
+        android:layout_marginTop="100dp"
+        app:srcCompat="@drawable/logo"
+        tools:layout_editor_absoluteX="65dp"
+        tools:layout_editor_absoluteY="112dp" />
+
+    <EditText
+        android:id="@+id/login_username"
+        android:layout_width="211dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="55dp"
+        android:hint="@string/login_user"
+        android:inputType="textNoSuggestions"
+        tools:layout_editor_absoluteX="100dp"
+        tools:layout_editor_absoluteY="449dp" />
+
+    <EditText
+        android:id="@+id/login_Password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="@string/login_pas"
+        android:inputType="textPassword"
+        tools:layout_editor_absoluteX="100dp"
+        tools:layout_editor_absoluteY="509dp" />
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="166dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="100dp"
+        android:text="@string/login_DN"
+        tools:layout_editor_absoluteX="112dp"
+        tools:layout_editor_absoluteY="583dp" />
+
+</LinearLayout>

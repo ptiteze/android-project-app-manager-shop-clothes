@@ -1,0 +1,140 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context="com.example.fragment.ProductFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:background="@drawable/top_background1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Manage Products"
+                android:textAlignment="center"
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/product_cate_discount"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:background="#F8FAFB"
+                android:src="@drawable/discount" />
+            <ImageButton
+                android:id="@+id/product_add"
+                android:layout_width="40dp"
+                android:layout_marginStart="5dp"
+                android:layout_height="match_parent"
+                android:background="#FBFBFB"
+                android:src="@drawable/add" />
+        </LinearLayout>
+        <EditText
+            android:id="@+id/product_search"
+            android:layout_width="321dp"
+            android:layout_height="37dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/edittext_search"
+            android:drawableStart="@drawable/search32"
+            android:ems="10"
+            android:hint="        Search Product...."
+            android:inputType="textNoSuggestions"
+            android:textSize="23sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+<!--            <com.google.android.material.chip.ChipGroup-->
+<!--                android:id="@+id/product_chip_group"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_weight="1"-->
+<!--                android:orientation="horizontal"-->
+<!--                app:chipSpacing="20dp"-->
+<!--                app:singleLine="true"-->
+<!--                app:singleSelection="true">-->
+
+<!--                <com.google.android.material.chip.Chip-->
+<!--                    android:id="@+id/product_chip_sp"-->
+<!--                    style="@style/Widget.MaterialComponents.Chip.Choice"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginStart="30dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:checked="true"-->
+<!--                    android:text="Product"-->
+<!--                    android:textAlignment="center"-->
+<!--                    app:chipIconTint="@color/black" />-->
+
+<!--                <com.google.android.material.chip.Chip-->
+<!--                    android:id="@+id/product_chip_discount"-->
+<!--                    style="@style/Widget.MaterialComponents.Chip.Choice"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="5dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:text="Discounted"-->
+<!--                    android:textAlignment="center"-->
+<!--                    app:chipIconTint="@color/black" />-->
+
+<!--                <com.google.android.material.chip.Chip-->
+<!--                    android:id="@+id/product_chip_cate"-->
+<!--                    style="@style/Widget.MaterialComponents.Chip.Choice"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="5dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:text="Category"-->
+<!--                    android:textAlignment="center"-->
+<!--                    app:chipIconTint="@color/black" />-->
+<!--            </com.google.android.material.chip.ChipGroup>-->
+
+
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:background="@drawable/button_border"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/product_show"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
