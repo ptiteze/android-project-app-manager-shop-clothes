@@ -26,21 +26,18 @@ public class CategoryDiscount extends AppCompatActivity {
         setControl();
         mviewPagerAdapterCateDis = new viewPagerAdapterCateDis(CategoryDiscount.this);
         viewPager.setAdapter(mviewPagerAdapterCateDis);
-        new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
-            @Override
-            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                switch (position) {
-            case 0:
-                tab.setText("Category");
-                break;
-            case 1:
-                tab.setText("Discount");
-                break;
-            case 2:
-                tab.setText("Order Discount");
-                break;
-        }
-            }
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            switch (position) {
+        case 0:
+            tab.setText("Category");
+            break;
+        case 1:
+            tab.setText("Discount");
+            break;
+        case 2:
+            tab.setText("Order Discount");
+            break;
+    }
         }).attach();
         setData();
         SetEvent();

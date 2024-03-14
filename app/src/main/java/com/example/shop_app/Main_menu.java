@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,9 +12,10 @@ import android.view.MenuItem;
 
 import com.example.fragment.viewPagerAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 public class Main_menu extends AppCompatActivity {
-    private ViewPager viewPager;
+    private ViewPager2 viewPager;
     private String u_id = "";
 
     public String getU_id() {
@@ -27,44 +29,60 @@ public class Main_menu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu);
         setControl();
-        viewPagerAdapter adapter= new viewPagerAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        viewPagerAdapter adapter= new viewPagerAdapter(Main_menu.this);
         viewPager.setAdapter(adapter);
         setEvent();
 
     }
 
     private void setEvent() {
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                switch (position){
-                    case 0:
-                        bottomNavigationView.getMenu().findItem(R.id.bottom_home).setChecked(true);
-                        break;
-                    case 1:
-                        bottomNavigationView.getMenu().findItem(R.id.bottom_product).setChecked(true);
-                        break;
-                    case 2:
-                        bottomNavigationView.getMenu().findItem(R.id.bottom_order).setChecked(true);
-                        break;
-                    case 3:
-                        bottomNavigationView.getMenu().findItem(R.id.bottom_statistical).setChecked(true);
-                        break;
-                    case 4:
-                        bottomNavigationView.getMenu().findItem(R.id.bottom_profile).setChecked(true);
-                        break;
-                }
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
             }
+
             @Override
             public void onPageSelected(int position) {
-
+                super.onPageSelected(position);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                super.onPageScrollStateChanged(state);
             }
         });
+//        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                switch (position){
+//                    case 0:
+//                        bottomNavigationView.getMenu().findItem(R.id.bottom_home).setChecked(true);
+//                        break;
+//                    case 1:
+//                        bottomNavigationView.getMenu().findItem(R.id.bottom_product).setChecked(true);
+//                        break;
+//                    case 2:
+//                        bottomNavigationView.getMenu().findItem(R.id.bottom_order).setChecked(true);
+//                        break;
+//                    case 3:
+//                        bottomNavigationView.getMenu().findItem(R.id.bottom_statistical).setChecked(true);
+//                        break;
+//                    case 4:
+//                        bottomNavigationView.getMenu().findItem(R.id.bottom_profile).setChecked(true);
+//                        break;
+//                }
+//            }
+//            @Override
+//            public void onPageSelected(int position) {
+//
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//
+//            }
+//        });
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
