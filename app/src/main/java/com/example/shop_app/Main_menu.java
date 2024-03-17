@@ -40,6 +40,23 @@ public class Main_menu extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                switch (position){
+                    case 0:
+                        bottomNavigationView.getMenu().findItem(R.id.bottom_home).setChecked(true);
+                        break;
+                    case 1:
+                        bottomNavigationView.getMenu().findItem(R.id.bottom_product).setChecked(true);
+                        break;
+                    case 2:
+                        bottomNavigationView.getMenu().findItem(R.id.bottom_order).setChecked(true);
+                        break;
+                    case 3:
+                        bottomNavigationView.getMenu().findItem(R.id.bottom_statistical).setChecked(true);
+                        break;
+                    case 4:
+                        bottomNavigationView.getMenu().findItem(R.id.bottom_profile).setChecked(true);
+                        break;
+                }
             }
 
             @Override
