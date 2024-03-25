@@ -26,9 +26,6 @@
         android:theme="@style/Theme.Shop_app"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".b11"-->
-<!--            android:exported="false" />-->
         <activity
             android:name=".AddCategory"
             android:exported="false" />
@@ -45,7 +42,7 @@
             android:name=".AddProduct"
             android:exported="false" />
         <activity
-            android:name=".b11"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
