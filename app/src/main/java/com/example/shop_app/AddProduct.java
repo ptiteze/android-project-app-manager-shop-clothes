@@ -230,7 +230,7 @@ public class AddProduct extends AppCompatActivity {
             name.requestFocus();
             return false;
         }
-        if(name.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵ].*")){
+        if(name.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
             name.setError("Tên sản phâm Không được chứa kí tự đặc biệt");
             name.requestFocus();
             return false;
@@ -240,7 +240,7 @@ public class AddProduct extends AppCompatActivity {
             description.requestFocus();
             return false;
         }
-        if(description.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵ].*")){
+        if(description.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
             description.setError("Thông tin sản phẩm Không được chứa kí tự đặc biệt");
             description.requestFocus();
             return false;
@@ -250,7 +250,7 @@ public class AddProduct extends AppCompatActivity {
             color.requestFocus();
             return false;
         }
-        if(color.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵ].*")){
+        if(color.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
             color.setError("Phần màu sắc Không được chứa kí tự đặc biệt");
             color.requestFocus();
             return false;
@@ -260,7 +260,7 @@ public class AddProduct extends AppCompatActivity {
             origin.requestFocus();
             return false;
         }
-        if(origin.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵ].*")){
+        if(origin.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
             origin.setError("Nguồn gốc sản phẩm Không được chứa kí tự đặc biệt");
             origin.requestFocus();
             return false;
@@ -270,7 +270,7 @@ public class AddProduct extends AppCompatActivity {
             material.requestFocus();
             return false;
         }
-        if(material.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵ].*")){
+        if(material.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
             material.setError("CHất liệu sản phẩm Không được chứa kí tự đặc biệt");
             material.requestFocus();
             return false;

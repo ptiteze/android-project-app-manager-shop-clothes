@@ -4,9 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -27,6 +30,7 @@ public class Category extends AppCompatActivity {
     FloatingActionButton btn_add;
     ChildEventListener mChildEventListener;
     List<String> list_category = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +82,13 @@ public class Category extends AppCompatActivity {
         query.addChildEventListener(mChildEventListener);
     }
     private void setEvent() {
-
+        btn_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent addCategory = new Intent(Category.this, AddCategory.class);
+                //add.putExtra("user_id", acc.getUser_id());
+                startActivity(addCategory);
+            }
+        });
     }
 }

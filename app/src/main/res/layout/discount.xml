@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Category">
-
+    tools:context=".Discount">
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
@@ -17,12 +16,12 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:text="Manage Category"
+            android:text="Manage Discount"
             android:textAlignment="center"
             android:textSize="25sp"
             android:textStyle="bold" />
         <EditText
-            android:id="@+id/category_search"
+            android:id="@+id/discount_search"
             android:layout_width="321dp"
             android:layout_height="37dp"
             android:layout_marginStart="20dp"
@@ -31,14 +30,14 @@
             android:background="@drawable/edittext_search"
             android:drawableStart="@drawable/search32"
             android:ems="10"
-            android:hint="        Search Category...."
+            android:hint="        Search Discount...."
             android:inputType="textNoSuggestions"
             android:textSize="23sp" />
         <Space
             android:layout_width="match_parent"
             android:layout_height="30dp"/>
         <ListView
-            android:id="@+id/list_category"
+            android:id="@+id/list_discount"
             android:layout_width="match_parent"
 
             android:layout_height="wrap_content"
@@ -46,7 +45,7 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatbtn_cate"
+        android:id="@+id/floatbtn_discount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -55,5 +54,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/add_64"
-        android:contentDescription="add CATEGORY" />
+        android:contentDescription="add discount" />
 </androidx.constraintlayout.widget.ConstraintLayout>
