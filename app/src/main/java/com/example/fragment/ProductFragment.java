@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +24,7 @@ import com.example.model.category;
 import com.example.model.product;
 import com.example.shop_app.AddProduct;
 import com.example.shop_app.Category;
+import com.example.shop_app.Discount;
 import com.example.shop_app.Main_menu;
 import com.example.shop_app.R;
 import com.example.shop_app.productAdapter;
@@ -41,10 +43,11 @@ import java.util.List;
 public class ProductFragment extends Fragment {
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     List<product> list_product = new ArrayList<>();
+    List<product> list_product_cate = new ArrayList<>();
     List<String> list_category = new ArrayList<>();
     ImageButton btn_back, btn_add;
-    Chip btn_category;
-    EditText search;
+    Chip btn_category, btn_discountOnProduct;
+    SearchView search;
     RecyclerView show;
     ChildEventListener mChildEventListener;
     Spinner spinner_cate;
@@ -66,9 +69,9 @@ public class ProductFragment extends Fragment {
         return view;
     }
 
-    private void showData() {
+    private void showData(List<product> listAdapter) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
-        adapter = new productAdapter(list_product,view.getContext());
+        adapter = new productAdapter(listAdapter,view.getContext());
         show.setAdapter(adapter);
         show.setLayoutManager(linearLayoutManager);
         //Log.d("find", String.valueOf(list_product.size()));
@@ -105,79 +108,27 @@ public class ProductFragment extends Fragment {
 
             }
         });
-//        Query query_prodcut_all = FirebaseDatabase.getInstance().getReference("product");
-////        Query query_prodcut_cate = FirebaseDatabase.getInstance().getReference("product")
-////                .orderByChild("category")
-////                .equalTo(spinner_cate.getSelectedItem().toString());
-//        mChildEventListener = new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//                product_count = snapshot.getChildrenCount();
-//                Log.d("product_count  ", String.valueOf(product_count));
-//                product new_product = new product();
-//                new_product = snapshot.getValue(product.class);
-//                if (new_product != null) {
-//                    list_product.add(new_product);
-//                    Log.d("data  " + String.valueOf(list_product.size()), new_product.toString());
-//                }
-//                showData();
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        };
-//        query_prodcut_all.addChildEventListener(mChildEventListener);
-    }
-
-    private void showDataCate() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, list_category);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_cate.setAdapter(adapter);
-    }
-
-    private void setEvent() {
+        Query query_prodcut_all = FirebaseDatabase.getInstance().getReference("product");
+//        Query query_prodcut_cate = FirebaseDatabase.getInstance().getReference("product")
+//                .orderByChild("category")
+//                .equalTo(spinner_cate.getSelectedItem().toString());
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 product_count = snapshot.getChildrenCount();
-                Log.d("product_count  ", String.valueOf(product_count));
+                //Log.d("product_count  ", String.valueOf(product_count));
                 product new_product = new product();
                 new_product = snapshot.getValue(product.class);
                 if (new_product != null) {
                     list_product.add(new_product);
                     Log.d("data  " + String.valueOf(list_product.size()), new_product.toString());
                 }
-                showData();
+                showData(list_product);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                product_count = snapshot.getChildrenCount();
-                Log.d("product_count  ", String.valueOf(product_count));
-                product new_product = new product();
-                new_product = snapshot.getValue(product.class);
-                if (new_product != null) {
-                    list_product.add(new_product);
-                    Log.d("data  " + String.valueOf(list_product.size()), new_product.toString());
-                }
-                showData();
+
             }
 
             @Override
@@ -195,6 +146,16 @@ public class ProductFragment extends Fragment {
 
             }
         };
+        query_prodcut_all.addChildEventListener(mChildEventListener);
+    }
+
+    private void showDataCate() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, list_category);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_cate.setAdapter(adapter);
+    }
+
+    private void setEvent() {
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -212,43 +173,49 @@ public class ProductFragment extends Fragment {
         });
         spinner_cate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(!list_product.isEmpty()){
-                    list_product.clear();
-                }
-                if(spinner_cate.getSelectedItem().toString().equals("Tất cả")){
-                    Query query_prodcut_all = FirebaseDatabase.getInstance().getReference("product");
-                    query_prodcut_all.addChildEventListener(mChildEventListener);
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String cate = spinner_cate.getSelectedItem().toString();
+                list_product_cate.clear();
+                if(cate.equals("Tất cả")){
+                    //Log.d("spinner 1", "onItemClick: "+ spinner_cate.getSelectedItem().toString());
+                    showData(list_product);
                 }else{
-                    Query query_prodcut_cate = FirebaseDatabase.getInstance().getReference("product")
-                        .orderByChild("category")
-                        .equalTo(spinner_cate.getSelectedItem().toString());
-                    query_prodcut_cate.addChildEventListener(mChildEventListener);
+                    for (product pr: list_product) {
+                        if(pr.getCategory().equals(cate)){
+                            list_product_cate.add(pr);
+                        }
+                    }
+                    showData(list_product_cate);
+                    //Log.d("spinner 2", "onItemClick: "+ spinner_cate.getSelectedItem().toString());
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                Log.d("spinner 1", "onItemClick: "+ spinner_cate.getSelectedItem().toString());
             }
         });
-//        search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                if(actionId == EditorInfo.IME_ACTION_SEARCH
-//                    || actionId == EditorInfo.IME_ACTION_DONE
-//                    || event.getAction() == KeyEvent.ACTION_DOWN
-//                    || event.getAction() == KeyEvent.KEYCODE_ENTER ){
-//                    String search_text = search.getText().toString();
-//                    Query query_search = FirebaseDatabase.getInstance().getReference("products")
-//                            .orderByChild("name")
-//                            .startAt(search_text)
-//                            .endAt(search_text+"\uf8ff");
-//                    query_search.addChildEventListener(mChildEventListener);
-//                }
-//                return false;
-//            }
-//        });
+        btn_discountOnProduct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent discountOnProduct = new Intent(view.getContext(), Discount.class);
+                //discountOnProduct.putExtra("user_id", u_id);
+                startActivity(discountOnProduct);
+            }
+        });
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
     }
 
     private void setControl() {
@@ -262,5 +229,6 @@ public class ProductFragment extends Fragment {
         btn_add = view.findViewById(R.id.product_add);
         btn_category = view.findViewById(R.id.product_cate);
         spinner_cate = view.findViewById(R.id.product_spin);
+        btn_discountOnProduct = view.findViewById(R.id.product_chip_discount);
     }
 }

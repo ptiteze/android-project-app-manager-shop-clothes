@@ -21,7 +21,20 @@
             android:textAlignment="center"
             android:textSize="25sp"
             android:textStyle="bold" />
-        <EditText
+<!--        <EditText-->
+<!--            android:id="@+id/category_search"-->
+<!--            android:layout_width="321dp"-->
+<!--            android:layout_height="37dp"-->
+<!--            android:layout_marginStart="20dp"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:layout_marginBottom="20dp"-->
+<!--            android:background="@drawable/edittext_search"-->
+<!--            android:drawableStart="@drawable/search32"-->
+<!--            android:ems="10"-->
+<!--            android:hint="        Search Category...."-->
+<!--            android:inputType="textNoSuggestions"-->
+<!--            android:textSize="23sp" />-->
+        <androidx.appcompat.widget.SearchView
             android:id="@+id/category_search"
             android:layout_width="321dp"
             android:layout_height="37dp"
@@ -32,8 +45,7 @@
             android:drawableStart="@drawable/search32"
             android:ems="10"
             android:hint="        Search Category...."
-            android:inputType="textNoSuggestions"
-            android:textSize="23sp" />
+            android:inputType="textNoSuggestions" />
         <Space
             android:layout_width="match_parent"
             android:layout_height="30dp"/>

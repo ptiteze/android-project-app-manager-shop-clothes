@@ -20,7 +20,7 @@
             android:textAlignment="center"
             android:textSize="25sp"
             android:textStyle="bold" />
-        <EditText
+        <androidx.appcompat.widget.SearchView
             android:id="@+id/discount_search"
             android:layout_width="321dp"
             android:layout_height="37dp"

@@ -358,10 +358,13 @@ public class AddProduct extends AppCompatActivity {
         if (chip_L.isChecked()) size_stock.put("L",0);
         if (chip_XL.isChecked()) size_stock.put("XL",0);
         if (chip_XXL.isChecked()) size_stock.put("XXL",0);
+        product_nextID = database.child("product").push().getKey();
+
         database.child("productSize").child(product_nextID).setValue(size_stock);
         product product_add = new product(product_nextID,pname,pcate,pmaterial,porigin,pdes,pcolor
                 ,pprice,0,objImgur.getLink(),true);
-        database.child("product").push().setValue(product_add);
+        database.child("product").child(product_nextID).setValue(product_add);
+
         clearInput();
         //Toast.makeText(AddProduct.this, " ", Toast.LENGTH_SHORT).show();
     }

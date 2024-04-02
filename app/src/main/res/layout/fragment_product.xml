@@ -44,7 +44,7 @@
                 android:src="@drawable/add" />
         </LinearLayout>
 
-        <EditText
+        <androidx.appcompat.widget.SearchView
             android:id="@+id/product_search"
             android:layout_width="321dp"
             android:layout_height="37dp"
@@ -94,7 +94,7 @@
                                     app:chipIconTint="@color/black" />
 
                                 <com.google.android.material.chip.Chip
-                                    android:id="@+id/product_chip_sp"
+                                    android:id="@+id/product_discountOnProduct"
                                     style="@style/Widget.MaterialComponents.Chip.Action"
                                     android:layout_width="wrap_content"
                                     android:layout_height="match_parent"

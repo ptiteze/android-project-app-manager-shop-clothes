@@ -1,9 +1,12 @@
 package com.example.shop_app;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,12 +19,14 @@ import com.example.model.product;
 import java.util.ArrayList;
 import java.util.List;
 
-public class productAdapter extends RecyclerView.Adapter<productAdapter.ViewHolder> {
+public class productAdapter extends RecyclerView.Adapter<productAdapter.ViewHolder> implements Filterable {
     List<product> list;
+    List<product> list_temp;
     Context context;
     public productAdapter(List<product> list, Context context) {
         this.list = list;
         this.context = context;
+        this.list_temp = list;
     }
 
     @NonNull
@@ -47,6 +52,38 @@ public class productAdapter extends RecyclerView.Adapter<productAdapter.ViewHold
     @Override
     public int getItemCount() {
         return list==null?0:list.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String search = charSequence.toString();
+                if(search.trim().isEmpty()){
+                    list = list_temp;
+                }else {
+                    List<product> list_search = new ArrayList<>();
+                    for (product pr: list_temp){
+                        if(pr.getName().toLowerCase().contains(search.toLowerCase())){
+                            list_search.add(pr);
+                        }
+                    }
+                    list = list_search;
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = list;
+                return filterResults;
+            }
+
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                list = (List<product>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

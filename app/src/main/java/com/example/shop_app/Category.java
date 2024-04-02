@@ -3,6 +3,7 @@ package com.example.shop_app;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Category extends AppCompatActivity {
-    EditText search;
+    SearchView search;
     ListView show;
     FloatingActionButton btn_add;
     ChildEventListener mChildEventListener;
@@ -52,7 +53,7 @@ public class Category extends AppCompatActivity {
                 cate = snapshot.getValue(category.class);
                 if(cate!=null){
                     list_category.add(cate.getName());
-                    Toast.makeText(Category.this, cate.getName(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(Category.this, cate.getName(), Toast.LENGTH_SHORT).show();
                 }
                 ArrayAdapter<String> adapter = new ArrayAdapter(Category.this, android.R.layout.simple_list_item_1,list_category);
                 show.setAdapter(adapter);
