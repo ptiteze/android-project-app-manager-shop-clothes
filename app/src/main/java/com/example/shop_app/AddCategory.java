@@ -4,9 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +21,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class AddCategory extends AppCompatActivity {
     String thisCategory;
@@ -118,6 +124,7 @@ public class AddCategory extends AppCompatActivity {
             }
 
         });
+
     }
 
     private void clearData() {
@@ -170,6 +177,7 @@ public class AddCategory extends AppCompatActivity {
                 Toast.makeText(AddCategory.this,"không thể kết nối tới dữ liệu",Toast.LENGTH_SHORT).show();
             }
         });
+
     }
     private void setControl() {
         title = findViewById(R.id.addcategory_title);
@@ -179,6 +187,6 @@ public class AddCategory extends AppCompatActivity {
         btn_back = findViewById(R.id.addCategory_back);
         name = findViewById(R.id.addCategory_name);
         des = findViewById(R.id.addCategory_description);
-    }
 
+    }
 }

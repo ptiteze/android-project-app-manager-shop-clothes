@@ -1,8 +1,9 @@
 package com.example.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class product {
+public class product implements Serializable {
     private String id;
     private String name;
     private String category;

@@ -65,7 +65,7 @@ public class ProductFragment extends Fragment {
         setData();
         //Log.d("main check", list.size()+" ");
         setEvent();
-        Log.d("product_count in main  " + String.valueOf(list_product.size()), String.valueOf(product_count));
+        //Log.d("product_count in main  " + String.valueOf(list_product.size()), String.valueOf(product_count));
         return view;
     }
 
@@ -174,6 +174,7 @@ public class ProductFragment extends Fragment {
         spinner_cate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                search.setQuery("",false);
                 String cate = spinner_cate.getSelectedItem().toString();
                 list_product_cate.clear();
                 if(cate.equals("Tất cả")){

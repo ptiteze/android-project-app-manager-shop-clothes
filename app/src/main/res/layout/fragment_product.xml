@@ -52,7 +52,6 @@
             android:background="@drawable/edittext_search"
             android:drawableStart="@drawable/search32"
             android:ems="10"
-            android:hint="        Search Product...."
             android:imeOptions="actionSearch"
             android:inputType="textNoSuggestions"
             android:textSize="23sp"
@@ -138,7 +137,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="475dp"
         android:background="@drawable/button_border"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout">

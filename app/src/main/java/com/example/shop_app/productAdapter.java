@@ -2,12 +2,16 @@ package com.example.shop_app;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +27,8 @@ public class productAdapter extends RecyclerView.Adapter<productAdapter.ViewHold
     List<product> list;
     List<product> list_temp;
     Context context;
+
+
     public productAdapter(List<product> list, Context context) {
         this.list = list;
         this.context = context;
@@ -39,7 +45,7 @@ public class productAdapter extends RecyclerView.Adapter<productAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull productAdapter.ViewHolder holder, int position) {
-        product product_temp = list.get(position);
+        final product product_temp = list.get(position);
         if (product_temp==null) {
             return;
         }
@@ -47,6 +53,21 @@ public class productAdapter extends RecyclerView.Adapter<productAdapter.ViewHold
         holder.cate.setText(product_temp.getCategory());
         holder.pri_stock.setText(product_temp.getPrice()+".VND - "+ product_temp.getStock());
         Glide.with(context).load(product_temp.getImage()).into(holder.product_view);
+        holder.layoutItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pass(product_temp);
+            }
+        });
+    }
+
+    private void pass(product productTemp) {
+        Intent detail = new Intent(context, ProductDetail.class);
+        Bundle bundle = new Bundle();
+        //Log.d("product", productTemp.toString());
+        bundle.putSerializable("product", productTemp);
+        detail.putExtras(bundle);
+        context.startActivity(detail);
     }
 
     @Override
@@ -86,15 +107,17 @@ public class productAdapter extends RecyclerView.Adapter<productAdapter.ViewHold
         };
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView product_view;
         TextView name, cate, pri_stock;
+        LinearLayout layoutItem;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             product_view = itemView.findViewById(R.id.item_product_img);
             name = itemView.findViewById(R.id.item_product_name);
             cate = itemView.findViewById(R.id.item_product_category);
             pri_stock = itemView.findViewById(R.id.item_product_price_stock);
+            layoutItem = itemView.findViewById(R.id.layout_item);
         }
     }
 }
