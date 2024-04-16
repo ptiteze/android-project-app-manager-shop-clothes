@@ -27,13 +27,17 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.*;
 
+import com.bumptech.glide.Glide;
 import com.example.API.ApiService;
 import com.example.model.category;
 import com.example.model.obj_imgur;
 import com.example.model.product;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -45,6 +49,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -60,15 +65,20 @@ public class AddProduct extends AppCompatActivity {
     public static final String CLIENT_ID = "ace5fa66141a632";
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     List<String> list_category = new ArrayList<>();
-    Chip chip_add, chip_cancel, chip_M, chip_L, chip_XL, chip_XXL;
-    Drawable drawable;
+    List<String> list_namePR = new ArrayList<>();
+    Chip chip_add, chip_cancel,chip_remove, chip_M, chip_L, chip_XL, chip_XXL;
+    Drawable drawable, drawable_update;
     Spinner spinner_category;
     ImageButton btn_back;
     ImageView addProduct_img;
     EditText name, description, color, material, origin, price;
-    ProgressBar progressBar;
+    TextView title;
+    boolean updateState = false, update_img = false;
     private String product_nextID = "SP";
-    private Uri muri;
+    Map<String, Integer> size = new HashMap<>();
+    product pr;
+    private Uri muri = null;
+    ArrayAdapter<String> adapter_cate;
     private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
                 @Override
@@ -101,8 +111,10 @@ public class AddProduct extends AppCompatActivity {
     }
 
     private void setControl() {
+        title = findViewById(R.id.addProduct_title);
         chip_add = findViewById(R.id.addproduct_complete);
         chip_cancel = findViewById(R.id.addproduct_cancel);
+        chip_remove = findViewById(R.id.addproduct_remove);
         spinner_category = findViewById(R.id.add_product_category);
         btn_back = findViewById(R.id.addProduct_back);
         addProduct_img = findViewById(R.id.addproduct_img);
@@ -117,25 +129,36 @@ public class AddProduct extends AppCompatActivity {
         chip_XL = findViewById(R.id.addProduct_XL);
         chip_XXL = findViewById(R.id.addProduct_XXL);
         drawable = addProduct_img.getDrawable();
-        progressBar = new ProgressBar(AddProduct.this);
 
     }
     private void showData() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(AddProduct.this, android.R.layout.simple_spinner_item, list_category);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_category.setAdapter(adapter);
+        adapter_cate = new ArrayAdapter<>(AddProduct.this, android.R.layout.simple_spinner_item, list_category);
+        adapter_cate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_category.setAdapter(adapter_cate);
+        if(updateState){
+            int index = list_category.indexOf(pr.getCategory());
+            spinner_category.setSelection(index);
+        }
     }
     private void setData() {
+        Bundle bundle = getIntent().getExtras();
+        if(bundle==null){
+            updateState = false;
+        }else{
+            pr =  (product) bundle.get("product");
+            assert pr != null;
+            updateState = true;
+        }
         database.child("category").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                category cate = new category();
-                cate = snapshot.getValue(category.class);
+                category cate  = snapshot.getValue(category.class);
                 if(cate!=null){
                     list_category.add(cate.getName());
                 }
                 showData();
             }
+
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
@@ -153,16 +176,44 @@ public class AddProduct extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                throw error.toException();
             }
         });
         Query query_product = database.child("product");
         query_product.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                long x = 10001 + snapshot.getChildrenCount();
-                product_nextID += String.valueOf(x).substring(1);
-                Log.d("next product ID", product_nextID);
+                //list_namePR.clear();
+                for(DataSnapshot dataSnapshot: snapshot.getChildren()) {
+                    product pr = dataSnapshot.getValue(product.class);
+                    if(pr!=null)
+                        list_namePR.add(pr.getName());
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                throw error.toException();
+            }
+        });
+        if(updateState) changePrUpdate();
+    }
+    private void changePrUpdate() {
+        name.setText(pr.getName());
+        Glide.with(AddProduct.this).load(pr.getImage()).into(addProduct_img);
+        description.setText(pr.getDescription());
+        color.setText(pr.getColor());
+        material.setText(pr.getMaterial());
+        origin.setText(pr.getOrigin());
+        price.setText(String.valueOf(pr.getPrice()));
+        database.child("productSize/"+pr.getId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    String key = childSnapshot.getKey();
+                    int value = childSnapshot.getValue(Integer.class);
+                    size.put(key, value);
+                }
+                setSize();
             }
 
             @Override
@@ -170,8 +221,35 @@ public class AddProduct extends AppCompatActivity {
 
             }
         });
+        title.setText("UPDATE PRODUCT");
+        chip_add.setText("Update Product");
+        chip_remove.setEnabled(true);
+        chip_remove.setVisibility(View.VISIBLE);
+        drawable_update = addProduct_img.getDrawable();
     }
 
+    private void setSize() {
+        for (String s: size.keySet()) {
+            switch (s){
+                case "M":
+                    chip_M.setChecked(true);
+                    chip_M.setEnabled(false);
+                    break;
+                case "L":
+                    chip_L.setChecked(true);
+                    chip_L.setEnabled(false);
+                    break;
+                case "XL":
+                    chip_XL.setChecked(true);
+                    chip_XL.setEnabled(false);
+                    break;
+                case "XXL":
+                    chip_XXL.setChecked(true);
+                    chip_XXL.setEnabled(false);
+                    break;
+            }
+        }
+    }
     private void setEvent() {
     btn_back.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -179,18 +257,22 @@ public class AddProduct extends AppCompatActivity {
             finish();
         }
     });
-    addProduct_img.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            onClickRequestPermission();
-        }
-    });
+    addProduct_img.setOnClickListener(v -> onClickRequestPermission());
     chip_add.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (check()){
-                callApiRegister();
-                Toast.makeText(AddProduct.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
+                if(updateState){
+                    if(muri==null){
+                        updateDataNotImg();
+                    }else{
+                        callApiRegister();
+                    }
+                }else{
+                    Log.d("update image: ", "false false");
+                    callApiRegister();
+                    //Toast.makeText(AddProduct.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
+                }
             }
 
         }
@@ -204,25 +286,76 @@ public class AddProduct extends AppCompatActivity {
     });
     }
 
-    private void clearInput() {
-        spinner_category.setSelection(0);
-        addProduct_img.setImageDrawable(drawable);
-        name.setText("");
-        description.setText("");
-        color.setText("");
-        material.setText("");
-        origin.setText("");
-        price.setText("");
-        chip_M.setChecked(false);
-        chip_L.setChecked(false);
-        chip_XL.setChecked(false);
-        chip_XXL.setChecked(false);
+    private void updateDataNotImg() {
+        String pid = pr.getId();
+        String pname = name.getText().toString().trim();
+        String pcate = spinner_category.getSelectedItem().toString();
+        String pmaterial = material.getText().toString().trim();
+        String porigin = origin.getText().toString().trim();
+        String pdes = description.getText().toString().trim();
+        String pcolor = color.getText().toString().trim();
+        int pprice = Integer.valueOf(price.getText().toString());
+        if (chip_M.isChecked()&&chip_M.isEnabled()) size.put("M",0);
+        if (chip_L.isChecked()&&chip_L.isEnabled()) size.put("L",0);
+        if (chip_XL.isChecked()&&chip_XL.isEnabled()) size.put("XL",0);
+        if (chip_XXL.isChecked()&&chip_XXL.isEnabled()) size.put("XXL",0);
+        database.child("productSize").child(pid).setValue(size);
+        product product_update = new product(pid,pname,pcate,pmaterial,porigin,pdes,pcolor
+                ,pprice,pr.getStock(),pr.getImage(),pr.isState());
+        database.child("product").child(pid).setValue(product_update).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    pr.setName(pname);
+                    pr.setCategory(pcate);
+                    pr.setMaterial(pmaterial);
+                    pr.setOrigin(porigin);
+                    pr.setDescription(pdes);
+                    pr.setColor(pcolor);
+                    pr.setPrice(pprice);
+                    clearInput();
+                    Toast.makeText(AddProduct.this, "Update sản phẩm: "+pname+" thành công!", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(AddProduct.this, "Update sản phẩm: "+pname+" không thành công!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
+
+    private void clearInput() {
+        if(updateState){
+            changePrUpdate();
+        }else {
+            spinner_category.setSelection(0);
+            addProduct_img.setImageDrawable(drawable);
+            name.setText("");
+            description.setText("");
+            color.setText("");
+            material.setText("");
+            origin.setText("");
+            price.setText("");
+            chip_M.setChecked(false);
+            chip_L.setChecked(false);
+            chip_XL.setChecked(false);
+            chip_XXL.setChecked(false);
+        }
+    }
+
 
     private boolean check() {
          //@SuppressLint("UseCompatLoadingForDrawables") Drawable drawable = getDrawable(R.drawable.img_add);
-        if(addProduct_img.getDrawable()==drawable){
+        if(addProduct_img.getDrawable()==drawable&&!updateState){
             Toast.makeText(AddProduct.this, "Chưa nhập ảnh", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(!updateState && list_namePR.contains(name.getText().toString().trim())){
+            name.setError("Tên sản phẩm bị trùng");
+            name.requestFocus();
+            return false;
+        }
+        if(updateState && !list_namePR.contains(pr.getName()) && list_namePR.contains(name.getText().toString().trim())){
+            name.setError("Tên sản phẩm bị trùng");
+            name.requestFocus();
             return false;
         }
         if(name.getText().toString().trim().isEmpty()){
@@ -230,7 +363,7 @@ public class AddProduct extends AppCompatActivity {
             name.requestFocus();
             return false;
         }
-        if(name.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
+        if(name.getText().toString().toLowerCase().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵảẳẩẻểỉỏổởủửỷđ].*")){
             name.setError("Tên sản phâm Không được chứa kí tự đặc biệt");
             name.requestFocus();
             return false;
@@ -240,7 +373,7 @@ public class AddProduct extends AppCompatActivity {
             description.requestFocus();
             return false;
         }
-        if(description.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
+        if(description.getText().toString().toLowerCase().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵảẳẩẻểỉỏổởủửỷđ].*")){
             description.setError("Thông tin sản phẩm Không được chứa kí tự đặc biệt");
             description.requestFocus();
             return false;
@@ -250,7 +383,7 @@ public class AddProduct extends AppCompatActivity {
             color.requestFocus();
             return false;
         }
-        if(color.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
+        if(color.getText().toString().toLowerCase().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵảẳẩẻểỉỏổởủửỷđ].*")){
             color.setError("Phần màu sắc Không được chứa kí tự đặc biệt");
             color.requestFocus();
             return false;
@@ -260,7 +393,7 @@ public class AddProduct extends AppCompatActivity {
             origin.requestFocus();
             return false;
         }
-        if(origin.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
+        if(origin.getText().toString().toLowerCase().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵảẳẩẻểỉỏổởủửỷđ].*")){
             origin.setError("Nguồn gốc sản phẩm Không được chứa kí tự đặc biệt");
             origin.requestFocus();
             return false;
@@ -270,12 +403,12 @@ public class AddProduct extends AppCompatActivity {
             material.requestFocus();
             return false;
         }
-        if(material.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
+        if(material.getText().toString().toLowerCase().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵảẳẩẻểỉỏổởủửỷđ].*")){
             material.setError("CHất liệu sản phẩm Không được chứa kí tự đặc biệt");
             material.requestFocus();
             return false;
         }
-        if(!(chip_M.isChecked()||chip_L.isChecked()||chip_XL.isChecked()||chip_XXL.isChecked())){
+        if((!(chip_M.isChecked()||chip_L.isChecked()||chip_XL.isChecked()||chip_XXL.isChecked()))&&!updateState){
             Toast.makeText(AddProduct.this, "Phải chọn tôi thiểu một loại kích cỡ cho sản phẩm", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -329,7 +462,11 @@ public class AddProduct extends AppCompatActivity {
                 obj_imgur objImgur = response.body();
                 if(objImgur != null){
                     Log.d("linkImage",objImgur.getLink());
-                    addData(objImgur);
+                    if(updateState){
+                        updateData(objImgur);
+                    }else{
+                        addData(objImgur);
+                    }
                     //Toast.makeText(AddProduct.this, "call API xong ", Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(AddProduct.this, "call API xong, không lấy về đc ", Toast.LENGTH_SHORT).show();
@@ -341,6 +478,43 @@ public class AddProduct extends AppCompatActivity {
                 //progressBar.setVisibility(View.GONE);
                 Toast.makeText(AddProduct.this, "Call API ngu "+t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d("APIngu",t.getMessage());
+            }
+        });
+    }
+
+    private void updateData(obj_imgur objImgur) {
+        String pid = pr.getId();
+        String pname = name.getText().toString().trim();
+        String pcate = spinner_category.getSelectedItem().toString();
+        String pmaterial = material.getText().toString().trim();
+        String porigin = origin.getText().toString().trim();
+        String pdes = description.getText().toString().trim();
+        String pcolor = color.getText().toString().trim();
+        int pprice = Integer.valueOf(price.getText().toString());
+        if (chip_M.isChecked()&&chip_M.isEnabled()) size.put("M",0);
+        if (chip_L.isChecked()&&chip_L.isEnabled()) size.put("L",0);
+        if (chip_XL.isChecked()&&chip_XL.isEnabled()) size.put("XL",0);
+        if (chip_XXL.isChecked()&&chip_XXL.isEnabled()) size.put("XXL",0);
+        database.child("productSize").child(pid).setValue(size);
+        product product_update = new product(pid,pname,pcate,pmaterial,porigin,pdes,pcolor
+                ,pprice,pr.getStock(),objImgur.getLink(),pr.isState());
+        database.child("product").child(pid).setValue(product_update).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    pr.setName(pname);
+                    pr.setCategory(pcate);
+                    pr.setMaterial(pmaterial);
+                    pr.setOrigin(porigin);
+                    pr.setDescription(pdes);
+                    pr.setColor(pcolor);
+                    pr.setPrice(pprice);
+                    pr.setImage(objImgur.getLink());
+                    clearInput();
+                    Toast.makeText(AddProduct.this, "Update sản phẩm: "+pname+" thành công!", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(AddProduct.this, "Update sản phẩm: "+pname+" không thành công!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -359,13 +533,19 @@ public class AddProduct extends AppCompatActivity {
         if (chip_XL.isChecked()) size_stock.put("XL",0);
         if (chip_XXL.isChecked()) size_stock.put("XXL",0);
         product_nextID = database.child("product").push().getKey();
-
         database.child("productSize").child(product_nextID).setValue(size_stock);
         product product_add = new product(product_nextID,pname,pcate,pmaterial,porigin,pdes,pcolor
                 ,pprice,0,objImgur.getLink(),true);
-        database.child("product").child(product_nextID).setValue(product_add);
-
-        clearInput();
-        //Toast.makeText(AddProduct.this, " ", Toast.LENGTH_SHORT).show();
+        database.child("product").child(product_nextID).setValue(product_add).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    clearInput();
+                    Toast.makeText(AddProduct.this, "Thêm sản phẩm: "+pname+" thành công!", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(AddProduct.this, "Thêm sản phẩm: "+pname+" không thành công!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

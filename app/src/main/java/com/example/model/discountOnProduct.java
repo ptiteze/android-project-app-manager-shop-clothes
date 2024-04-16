@@ -10,7 +10,7 @@ public class discountOnProduct {
     private String timeEnd;
     private  int percent;
     private  String des;
-    private String list_product = null;
+
 
     public discountOnProduct(String id, String name, String timeStart, String timeEnd, int percent, String des) {
         this.id = id;
@@ -81,7 +81,6 @@ public class discountOnProduct {
                 ", timeEnd='" + timeEnd + '\'' +
                 ", percent=" + percent +
                 ", des='" + des + '\'' +
-                ", list_product='" + list_product + '\'' +
                 '}';
     }
 }

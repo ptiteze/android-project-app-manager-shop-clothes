@@ -138,7 +138,7 @@ public class AddCategory extends AppCompatActivity {
             name.requestFocus();
             return false;
         }
-        if(name.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
+        if(name.getText().toString().toLowerCase().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵảẳẩẻểỉỏổởủửỷđ].*")){
             name.setError("Tên sản loại sản phâm Không được chứa kí tự đặc biệt");
             name.requestFocus();
             return false;
@@ -148,7 +148,7 @@ public class AddCategory extends AppCompatActivity {
             des.requestFocus();
             return false;
         }
-        if(des.getText().toString().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵđ].*")){
+        if(des.getText().toString().toLowerCase().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵảẳẩẻểỉỏổởủửỷđ].*")){
             des.setError("Thông tin loại sản phẩm Không được chứa kí tự đặc biệt");
             des.requestFocus();
             return false;

@@ -3,6 +3,7 @@ package com.example.shop_app;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,10 +14,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.model.product;
 import com.google.android.material.chip.Chip;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -29,7 +32,9 @@ public class ProductDetail extends AppCompatActivity {
     TextView name, des, cate, color, material, origin, price;
     Chip chip_fix, chipM, chipL, chipXL, chipXXL;
     product pr;
+    String pr_id;
     List<String> size = new ArrayList<>();
+    //ValueEventListener mvalueEventListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +62,13 @@ public class ProductDetail extends AppCompatActivity {
     }
 
     private void setData() {
+//        Intent intent = getIntent();
+//        if(intent != null && intent.hasExtra("product")) {
+//            pr_id = intent.getStringExtra("product");
+//            Query query =  FirebaseDatabase.getInstance().getReference("product/"+pr_id);
+//            query.addValueEventListener(mvalueEventListener);
+//        }
+
         Bundle bundle = getIntent().getExtras();
         if(bundle==null) return;
         pr =  (product) bundle.get("product");
@@ -109,6 +121,13 @@ public class ProductDetail extends AppCompatActivity {
 
     private void setEvent() {
         btn_back.setOnClickListener(view -> finish());
-
+        chip_fix.setOnClickListener(view -> {
+            Intent detail = new Intent(ProductDetail.this,AddProduct.class);
+            Bundle bundle = new Bundle();
+            //Log.d("product", productTemp.toString());
+            bundle.putSerializable("product", pr);
+            detail.putExtras(bundle);
+            startActivity(detail);
+        });
     }
 }

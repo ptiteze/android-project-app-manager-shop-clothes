@@ -89,7 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:layout_marginTop="5dp"
-                android:hint="  Category Name"
+                android:hint="  Discount Name"
                 android:textAlignment="center"
                 android:inputType="textNoSuggestions"
                 android:textStyle="bold" />

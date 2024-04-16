@@ -24,10 +24,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Timer;
 
 public class Discount extends AppCompatActivity {
@@ -59,14 +63,20 @@ public class Discount extends AppCompatActivity {
                 discount = snapshot.getValue(discountOnProduct.class);
                 if(discount!=null){
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                        //LocalDateTime dateTimeStart = LocalDateTime.parse(discount.getTimeStart());
-                        LocalDate dateTimeEnd = LocalDate.parse(discount.getTimeEnd());
-                        LocalDate now = LocalDate.now();
-                     if(!dateTimeEnd.isBefore(now)){
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+                        Calendar currentTime = Calendar.getInstance();
+                        Calendar dateE = Calendar.getInstance();
+                        try {
+                            dateE.setTime(format.parse(discount.getTimeEnd()));
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        if(dateE.after(currentTime)){
                          String data="";
-                         data = "Khuyến mãi: "+ discount.getName() + "/n Thời gian"
+                         data = "Khuyến mãi: "+ discount.getName() + "\n Thời gian"
                                  + discount.getTimeStart() + " - " + discount.getTimeEnd()
-                                 + "/n Khuyến mãi: " + String.valueOf(discount.getPercent()) + " %.";
+                                 + "\n Khuyến mãi: " + String.valueOf(discount.getPercent()) + " %.";
                          list_discount.add(data);
                      }
                 }

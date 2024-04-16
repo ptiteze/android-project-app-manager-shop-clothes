@@ -35,7 +35,7 @@
                 android:src="@drawable/back" />
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/addProduct_title"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -270,11 +270,23 @@
                     android:id="@+id/addProduct_XXL"
                     />
             </LinearLayout>
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/addproduct_remove"
+                android:layout_marginTop="15dp"
+                android:layout_gravity="center"
+                android:text="    Remove     "
+                android:background="#8C5D63"
+                style="@style/Widget.MaterialComponents.Chip.Action"
+                android:textAlignment="center"
+                android:visibility="invisible"
+                android:enabled="false"
+                app:chipIcon="@drawable/remove"/>
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="300dp"/>
         </LinearLayout>
     </ScrollView>
-
 
 </LinearLayout>
