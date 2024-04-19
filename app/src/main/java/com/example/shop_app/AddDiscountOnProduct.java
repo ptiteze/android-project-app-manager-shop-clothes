@@ -255,10 +255,10 @@ public class AddDiscountOnProduct extends AppCompatActivity {
                 dateE.setTime(format.parse(tS));
 //                Date dateS = format.parse(tS);
 //                Date dateE = format.parse(tS);
-                if(currentTime.after(dateS)){
-                    Toast.makeText(AddDiscountOnProduct.this, "thời gian bắt đầu giảm giá phải sau thời gian hiện tại", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
+//                if(currentTime.after(dateS)){
+//                    Toast.makeText(AddDiscountOnProduct.this, "thời gian bắt đầu giảm giá phải sau thời gian hiện tại", Toast.LENGTH_SHORT).show();
+//                    return true;
+//                }
                 if(dateE.after(dateS)||tStart.getText().toString().equals(tEnd.getText().toString())){
                     Toast.makeText(AddDiscountOnProduct.this, "thời gian hết giảm giá phải sau thời gian bắt đầu giảm giá", Toast.LENGTH_SHORT).show();
                     return true;

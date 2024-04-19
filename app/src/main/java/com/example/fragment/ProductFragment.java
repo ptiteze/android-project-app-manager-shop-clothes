@@ -1,5 +1,6 @@
 package com.example.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -16,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
@@ -25,6 +25,7 @@ import com.example.model.product;
 import com.example.shop_app.AddProduct;
 import com.example.shop_app.Category;
 import com.example.shop_app.Discount;
+import com.example.shop_app.DiscountOnOrder;
 import com.example.shop_app.Main_menu;
 import com.example.shop_app.R;
 import com.example.shop_app.productAdapter;
@@ -37,16 +38,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 public class ProductFragment extends Fragment {
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     List<product> list_product = new ArrayList<>();
     List<product> list_product_cate = new ArrayList<>();
-    List<String> list_category = new ArrayList<>();
+    Map<String, String> list_category = new HashMap<>(); // key, name
     ImageButton btn_back, btn_add;
-    Chip btn_category, btn_discountOnProduct;
+    Chip btn_category,btn_discountOnOrder, btn_discountOnProduct;
     SearchView search;
     RecyclerView show;
     ChildEventListener mChildEventListener;
@@ -55,7 +59,7 @@ public class ProductFragment extends Fragment {
     private Main_menu mainMenu;
     String u_id;
     View view;
-    static long product_count = 0;
+    ArrayAdapter<String> adaptercate;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,15 +67,15 @@ public class ProductFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_product, container, false);
         setControl();
         setData();
-        //Log.d("main check", list.size()+" ");
         setEvent();
-        //Log.d("product_count in main  " + String.valueOf(list_product.size()), String.valueOf(product_count));
         return view;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void showData(List<product> listAdapter) {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
         adapter = new productAdapter(listAdapter,view.getContext());
+        adapter.notifyDataSetChanged();
         show.setAdapter(adapter);
         show.setLayoutManager(linearLayoutManager);
         //Log.d("find", String.valueOf(list_product.size()));
@@ -81,21 +85,39 @@ public class ProductFragment extends Fragment {
         database.child("category").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                category cate = new category();
-                cate = snapshot.getValue(category.class);
+                category cate = snapshot.getValue(category.class);
+                String key = snapshot.getKey();
                 if(cate!=null){
-                    list_category.add(cate.getName());
+                    list_category.put(key,cate.getName());
+                    showDataCate(list_category);
                 }
-                showDataCate();
             }
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                category update_category = snapshot.getValue(category.class);
+                String key = snapshot.getKey();
+                if(update_category!=null){
+                    for (String k: list_category.keySet()) {
+                        if (k.equals(key)){
+                            list_category.put(k,update_category.getName());
+                            showDataCate(list_category);
+                            break;
+                        }
+                    }
+//                    for (int i = 0; i < list_category.size(); i++) {
+//                        if(list_category.get(i).equals(update_category.getName())){
+//                            list_category.set(i,update_category.getName());
+//
+//                        }
+//                    }
+                }
             }
-
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
+                String removedKey = snapshot.getKey();
+                // Xóa phần tử tương ứng từ list_category
+                list_category.remove(removedKey);
+                showDataCate(list_category);
             }
 
             @Override
@@ -109,26 +131,31 @@ public class ProductFragment extends Fragment {
             }
         });
         Query query_prodcut_all = FirebaseDatabase.getInstance().getReference("product");
-//        Query query_prodcut_cate = FirebaseDatabase.getInstance().getReference("product")
-//                .orderByChild("category")
-//                .equalTo(spinner_cate.getSelectedItem().toString());
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                product_count = snapshot.getChildrenCount();
-                //Log.d("product_count  ", String.valueOf(product_count));
                 product new_product = new product();
                 new_product = snapshot.getValue(product.class);
                 if (new_product != null) {
                     list_product.add(new_product);
-                    Log.d("data  " + String.valueOf(list_product.size()), new_product.toString());
+                    //Log.d("data  " + String.valueOf(list_product.size()), new_product.toString());
+                    showData(list_product);
                 }
-                showData(list_product);
+
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                product update_product = snapshot.getValue(product.class);
+                if(update_product!=null){
+                    for (int i = 0; i < list_product.size(); i++) {
+                        if (list_product.get(i).getId().equals(update_product.getId())) {
+                            list_product.set(i, update_product);
+                            showData(list_product);
+                            break;
+                        }
+                    }
+                }
             }
 
             @Override
@@ -149,10 +176,12 @@ public class ProductFragment extends Fragment {
         query_prodcut_all.addChildEventListener(mChildEventListener);
     }
 
-    private void showDataCate() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, list_category);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_cate.setAdapter(adapter);
+    private void showDataCate(Map<String, String> list_cate) {
+        List<String> list = new ArrayList<>(list_cate.values());
+        adaptercate = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item,list);
+        adaptercate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adaptercate.notifyDataSetChanged();
+        spinner_cate.setAdapter(adaptercate);
     }
 
     private void setEvent() {
@@ -204,6 +233,14 @@ public class ProductFragment extends Fragment {
                 startActivity(discountOnProduct);
             }
         });
+        btn_discountOnOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent discountOnOrder = new Intent(view.getContext(), DiscountOnOrder.class);
+                //discountOnProduct.putExtra("user_id", u_id);
+                startActivity(discountOnOrder);
+            }
+        });
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -220,7 +257,7 @@ public class ProductFragment extends Fragment {
     }
 
     private void setControl() {
-        list_category.add("Tất cả");
+        list_category.put("1","Tất cả");
         mainMenu = (Main_menu) getActivity();
         if(mainMenu!=null){
             u_id = mainMenu.getU_id();
@@ -231,5 +268,7 @@ public class ProductFragment extends Fragment {
         btn_category = view.findViewById(R.id.product_cate);
         spinner_cate = view.findViewById(R.id.product_spin);
         btn_discountOnProduct = view.findViewById(R.id.product_chip_discount);
+        btn_discountOnOrder = view.findViewById(R.id.product_discountOnOrder);
+
     }
 }

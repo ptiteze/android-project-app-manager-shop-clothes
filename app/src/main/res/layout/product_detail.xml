@@ -212,54 +212,108 @@
                 android:layout_height="25dp"
                 android:background="#DBCFF1"
                 android:layout_marginTop="5dp"
-                android:text="      Size"
+                android:text="      Size                                          Stock"
                 android:layout_marginBottom="4dp"/>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
                 <!--                 M,L,XL,XXL-->
-                <com.google.android.material.chip.Chip
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="15dp"
-                    android:text="M"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:textAlignment="center"
-                    android:id="@+id/productDetail_M"
-                    android:enabled="false"
-                    />
-                <com.google.android.material.chip.Chip
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="5dp"
-                    android:text="L"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:textAlignment="center"
-                    android:id="@+id/productDetail_L"
-                    android:enabled="false"
-                    />
-                <com.google.android.material.chip.Chip
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="5dp"
-                    android:text="XL"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:textAlignment="center"
-                    android:id="@+id/productDetail_XL"
-                    android:enabled="false"
-                    />
-                <com.google.android.material.chip.Chip
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="5dp"
-                    android:text="XXL"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:textAlignment="center"
-                    android:id="@+id/productDetail_XXL"
-                    android:enabled="false"
-                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="80dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:text="M"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:textAlignment="center"
+                        android:id="@+id/productDetail_M"
+                        android:enabled="false"
+                        />
+                    <TextView
+                        android:id="@+id/prDetail_stockM"
+                        android:layout_width="300dp"
+                        android:layout_height="match_parent"
+                        android:textAlignment="center"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="80dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:text="L"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:textAlignment="center"
+                        android:id="@+id/productDetail_L"
+                        android:enabled="false"
+                        />
+                    <TextView
+                        android:id="@+id/prDetail_stockL"
+                        android:layout_width="300dp"
+                        android:layout_height="match_parent"
+                        android:textAlignment="center"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="80dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:text="XL"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:textAlignment="center"
+                        android:id="@+id/productDetail_XL"
+                        android:enabled="false"
+                        />
+                    <TextView
+                        android:id="@+id/prDetail_stockXL"
+                        android:layout_width="300dp"
+                        android:layout_height="match_parent"
+                        android:textAlignment="center"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="80dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:text="XXL"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:textAlignment="center"
+                        android:id="@+id/productDetail_XXL"
+                        android:enabled="false"
+                        />
+                    <TextView
+                        android:id="@+id/prDetail_stockXXL"
+                        android:layout_width="300dp"
+                        android:layout_height="match_parent"
+                        android:textAlignment="center"
+                        />
+                </LinearLayout>
+
             </LinearLayout>
+            <TextView
+                android:id="@+id/productDetail_state"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:background="#DBCFF1"
+                android:layout_marginTop="5dp"
+                android:text="      State:  "
+                android:textSize="15sp"
+                android:layout_marginBottom="4dp"/>
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="300dp"/>

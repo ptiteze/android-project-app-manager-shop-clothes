@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Discount">
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="Manage Discount On Order"
+            android:textAlignment="center"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/discountOO_search"
+            android:layout_width="321dp"
+            android:layout_height="37dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/edittext_search"
+            android:drawableStart="@drawable/search32"
+            android:ems="10"
+            android:hint="        Search Discount...."
+            android:inputType="textNoSuggestions"
+            android:textSize="23sp" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="30dp"/>
+        <ListView
+            android:id="@+id/list_discountOO"
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_border" />
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatbtn_discountOO"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="15dp"
+        android:background="@drawable/avata_border"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/add_64"
+        android:contentDescription="add discount" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,6 +12,7 @@ public class product implements Serializable {
     private String description;
     private String color;
     private int price;
+    private int importPrice;
     private int stock;
     private String image;
     private boolean state;
@@ -21,7 +22,7 @@ public class product implements Serializable {
     //, List<com.example.model.size_color> size_color
 
 
-    public product(String id, String name, String category, String material, String origin, String description, String color, int price, int stock, String image, boolean state) {
+    public product(String id, String name, String category, String material, String origin, String description, String color, int price, int importPrice, int stock, String image, boolean state) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -30,9 +31,18 @@ public class product implements Serializable {
         this.description = description;
         this.color = color;
         this.price = price;
+        this.importPrice = importPrice;
         this.stock = stock;
         this.image = image;
         this.state = state;
+    }
+
+    public int getImportPrice() {
+        return importPrice;
+    }
+
+    public void setImportPrice(int importPrice) {
+        this.importPrice = importPrice;
     }
 
     public String getColor() {
@@ -133,6 +143,7 @@ public class product implements Serializable {
                 ", origin='" + origin + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
+                ", importPrice=" + importPrice +
                 ", stock=" + stock +
                 ", image='" + image + '\'' +
                 ", state=" + state +

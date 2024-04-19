@@ -71,7 +71,9 @@ public class AddProduct extends AppCompatActivity {
     Spinner spinner_category;
     ImageButton btn_back;
     ImageView addProduct_img;
-    EditText name, description, color, material, origin, price;
+    EditText name, description, color, material, origin,
+            price,
+            improtPrice;
     TextView title;
     boolean updateState = false, update_img = false;
     private String product_nextID = "SP";
@@ -124,12 +126,12 @@ public class AddProduct extends AppCompatActivity {
         material = findViewById(R.id.addProduct_material);
         origin = findViewById(R.id.addProduct_origin);
         price = findViewById(R.id.addProduct_price);
+        improtPrice = findViewById(R.id.addProduct_importPrice);
         chip_M = findViewById(R.id.addProduct_M);
         chip_L = findViewById(R.id.addProduct_L);
         chip_XL = findViewById(R.id.addProduct_XL);
         chip_XXL = findViewById(R.id.addProduct_XXL);
         drawable = addProduct_img.getDrawable();
-
     }
     private void showData() {
         adapter_cate = new ArrayAdapter<>(AddProduct.this, android.R.layout.simple_spinner_item, list_category);
@@ -205,6 +207,10 @@ public class AddProduct extends AppCompatActivity {
         material.setText(pr.getMaterial());
         origin.setText(pr.getOrigin());
         price.setText(String.valueOf(pr.getPrice()));
+        improtPrice.setText(String.valueOf(pr.getImportPrice()));
+        if(pr.isState()){
+            chip_remove.setText("Un lock");
+        }
         database.child("productSize/"+pr.getId()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -277,6 +283,20 @@ public class AddProduct extends AppCompatActivity {
 
         }
     });
+    chip_remove.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(pr.isState()){
+                pr.setState(false);
+                chip_remove.setText("Un Lock");
+                Toast.makeText(AddProduct.this, "Đã khóa sản phẩm", Toast.LENGTH_SHORT).show();
+            }else{
+                pr.setState(true);
+                chip_remove.setText("Lock");
+                Toast.makeText(AddProduct.this, "Đã mở sản phẩm", Toast.LENGTH_SHORT).show();
+            }
+        }
+    });
     chip_cancel.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -295,13 +315,14 @@ public class AddProduct extends AppCompatActivity {
         String pdes = description.getText().toString().trim();
         String pcolor = color.getText().toString().trim();
         int pprice = Integer.valueOf(price.getText().toString());
+        int pImportPrice = Integer.valueOf(improtPrice.getText().toString());
         if (chip_M.isChecked()&&chip_M.isEnabled()) size.put("M",0);
         if (chip_L.isChecked()&&chip_L.isEnabled()) size.put("L",0);
         if (chip_XL.isChecked()&&chip_XL.isEnabled()) size.put("XL",0);
         if (chip_XXL.isChecked()&&chip_XXL.isEnabled()) size.put("XXL",0);
         database.child("productSize").child(pid).setValue(size);
         product product_update = new product(pid,pname,pcate,pmaterial,porigin,pdes,pcolor
-                ,pprice,pr.getStock(),pr.getImage(),pr.isState());
+                ,pprice,pImportPrice,pr.getStock(),pr.getImage(),pr.isState());
         database.child("product").child(pid).setValue(product_update).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -313,6 +334,7 @@ public class AddProduct extends AppCompatActivity {
                     pr.setDescription(pdes);
                     pr.setColor(pcolor);
                     pr.setPrice(pprice);
+                    pr.setImportPrice(pImportPrice);
                     clearInput();
                     Toast.makeText(AddProduct.this, "Update sản phẩm: "+pname+" thành công!", Toast.LENGTH_SHORT).show();
                 }else{
@@ -334,6 +356,7 @@ public class AddProduct extends AppCompatActivity {
             material.setText("");
             origin.setText("");
             price.setText("");
+            improtPrice.setText("");
             chip_M.setChecked(false);
             chip_L.setChecked(false);
             chip_XL.setChecked(false);
@@ -353,10 +376,15 @@ public class AddProduct extends AppCompatActivity {
             name.requestFocus();
             return false;
         }
-        if(updateState && !list_namePR.contains(pr.getName()) && list_namePR.contains(name.getText().toString().trim())){
-            name.setError("Tên sản phẩm bị trùng");
-            name.requestFocus();
-            return false;
+        if(updateState){
+            List<String> listTemp =  new ArrayList<>(list_namePR);
+            listTemp.remove(pr.getName());
+            if( listTemp.contains(name.getText().toString().trim())){
+                name.setError("Tên sản phẩm bị trùng");
+                name.requestFocus();
+                return false;
+            }
+            listTemp=null;
         }
         if(name.getText().toString().trim().isEmpty()){
             name.setError("Chưa nhâp tên sản phẩm");
@@ -406,6 +434,16 @@ public class AddProduct extends AppCompatActivity {
         if(material.getText().toString().toLowerCase().trim().matches(".*[^a-zA-Z 0-9âăưêôơàằầèềìòồờùừỳáắấéếíóốớúứýãẵẫẽễĩõỗỡũữỹạặậẹệịọộợụựỵảẳẩẻểỉỏổởủửỷđ].*")){
             material.setError("CHất liệu sản phẩm Không được chứa kí tự đặc biệt");
             material.requestFocus();
+            return false;
+        }
+        if(price.getText().toString().trim().equals("")){
+            price.setError("Chưa nhập giá bán sản phẩm");
+            price.requestFocus();
+            return false;
+        }
+        if(improtPrice.getText().toString().trim().equals("")){
+            improtPrice.setError("Chưa nhập giá bán sản phẩm");
+            improtPrice.requestFocus();
             return false;
         }
         if((!(chip_M.isChecked()||chip_L.isChecked()||chip_XL.isChecked()||chip_XXL.isChecked()))&&!updateState){
@@ -491,13 +529,14 @@ public class AddProduct extends AppCompatActivity {
         String pdes = description.getText().toString().trim();
         String pcolor = color.getText().toString().trim();
         int pprice = Integer.valueOf(price.getText().toString());
+        int pImportPrice = Integer.valueOf(improtPrice.getText().toString());
         if (chip_M.isChecked()&&chip_M.isEnabled()) size.put("M",0);
         if (chip_L.isChecked()&&chip_L.isEnabled()) size.put("L",0);
         if (chip_XL.isChecked()&&chip_XL.isEnabled()) size.put("XL",0);
         if (chip_XXL.isChecked()&&chip_XXL.isEnabled()) size.put("XXL",0);
         database.child("productSize").child(pid).setValue(size);
         product product_update = new product(pid,pname,pcate,pmaterial,porigin,pdes,pcolor
-                ,pprice,pr.getStock(),objImgur.getLink(),pr.isState());
+                ,pprice,pImportPrice,pr.getStock(),objImgur.getLink(),pr.isState());
         database.child("product").child(pid).setValue(product_update).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -527,6 +566,7 @@ public class AddProduct extends AppCompatActivity {
         String pdes = description.getText().toString().trim();
         String pcolor = color.getText().toString().trim();
         int pprice = Integer.valueOf(price.getText().toString());
+        int pImportPrice = Integer.valueOf(improtPrice.getText().toString());
         Map<String,Integer> size_stock = new TreeMap<>();
         if (chip_M.isChecked()) size_stock.put("M",0);
         if (chip_L.isChecked()) size_stock.put("L",0);
@@ -535,7 +575,7 @@ public class AddProduct extends AppCompatActivity {
         product_nextID = database.child("product").push().getKey();
         database.child("productSize").child(product_nextID).setValue(size_stock);
         product product_add = new product(product_nextID,pname,pcate,pmaterial,porigin,pdes,pcolor
-                ,pprice,0,objImgur.getLink(),true);
+                ,pprice,pImportPrice,0,objImgur.getLink(),true);
         database.child("product").child(product_nextID).setValue(product_add).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

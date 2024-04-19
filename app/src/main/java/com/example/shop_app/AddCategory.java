@@ -1,6 +1,7 @@
 package com.example.shop_app;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -15,23 +16,33 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.model.category;
+import com.example.model.product;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class AddCategory extends AppCompatActivity {
-    String thisCategory;
+    String thisCategory, keyThisCategory;
     boolean hasThisCategory = false, checkCate = false;
     ImageButton btn_back;
     TextView title;
     Chip btn_add, btn_cancel, btn_remove;
     TextView name, des;
+    category catex;
+    List<String> listTemp =  new ArrayList<>();
+    List<String> list_name = new ArrayList<>();
+    List<String> list_temp = new ArrayList<>();
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,14 +65,15 @@ public class AddCategory extends AppCompatActivity {
             btn_add.setText("Complete");
             btn_remove.setEnabled(true);
             btn_remove.setVisibility(View.VISIBLE);
-            database.child("category").orderByChild("name").equalTo(thisCategory);
-            database.addValueEventListener(new ValueEventListener() {
+            database.child("category").orderByChild("name").equalTo(thisCategory).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        keyThisCategory = dataSnapshot.getKey();
                         category cate = new category();
                         cate = dataSnapshot.getValue(category.class);
                         if (cate != null) {
+                            catex = cate;
                             name.setText(cate.getName());
                             des.setText(cate.getDescrip());
                         } else {
@@ -69,6 +81,24 @@ public class AddCategory extends AppCompatActivity {
                         }
                     }
                 }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(AddCategory.this,"không thể kết nối tới dữ liệu",Toast.LENGTH_SHORT).show();
+                }
+            });
+            database.child("category").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    list_name.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        category cate = new category();
+                        cate = dataSnapshot.getValue(category.class);
+                        if (cate != null) {
+                            list_name.add(cate.getName());
+                        }
+                    }
+                }
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Toast.makeText(AddCategory.this,"không thể kết nối tới dữ liệu",Toast.LENGTH_SHORT).show();
@@ -83,32 +113,59 @@ public class AddCategory extends AppCompatActivity {
             if(!hasThisCategory){
                 clearData();
             }else{
-                database.child("category").orderByChild("name").equalTo(thisCategory);
-                database.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            category cate = new category();
-                            cate = dataSnapshot.getValue(category.class);
-                            if (cate != null) {
-                                name.setText(cate.getName());
-                                des.setText(cate.getDescrip());
-                            } else {
-                                Toast.makeText(AddCategory.this, "không tìm thấy loại sản phẩm này", Toast.LENGTH_SHORT).show();
-                            }
-
-                        }
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(AddCategory.this,"không thể kết nối tới dữ liệu",Toast.LENGTH_SHORT).show();
-                    }
-                });
+                name.setText(catex.getName());
+                des.setText(catex.getDescrip());
+//                database.child("category").orderByChild("name").equalTo(thisCategory);
+//                database.addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+//                            category cate = new category();
+//                            cate = dataSnapshot.getValue(category.class);
+//                            if (cate != null) {
+//                                name.setText(cate.getName());
+//                                des.setText(cate.getDescrip());
+//                            } else {
+//                                Toast.makeText(AddCategory.this, "không tìm thấy loại sản phẩm này", Toast.LENGTH_SHORT).show();
+//                            }
+//
+//                        }
+//                    }
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//                        Toast.makeText(AddCategory.this,"không thể kết nối tới dữ liệu",Toast.LENGTH_SHORT).show();
+//                    }
+//                });
             }
         });
         btn_add.setOnClickListener(view -> {
             if(hasThisCategory){
-                Toast.makeText(AddCategory.this,"Sửa thành công",Toast.LENGTH_SHORT).show();
+                if(check()){
+                    catex.setName(name.getText().toString().trim());
+                    catex.setDescrip(des.getText().toString().trim());
+                    database.child("category").child(keyThisCategory).setValue(catex);
+                    Query query = database.child("product").orderByChild("category").equalTo(thisCategory);
+                    query.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            list_temp.clear();
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                product pr = dataSnapshot.getValue(product.class);
+                                //if (pr.getCategory().equals(thisCategory))
+                                    list_temp.add(pr.getId());
+                            }
+                            for (String id: list_temp) {
+                                database.child("product/"+id+"/category").setValue(catex.getName());
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            error.toException();
+                        }
+                    });
+                    Toast.makeText(AddCategory.this,"Sửa thành công",Toast.LENGTH_SHORT).show();
+                }
             }else {
                 if(check()){
                     category cate = new category(name.getText().toString(), des.getText().toString());
@@ -124,15 +181,79 @@ public class AddCategory extends AppCompatActivity {
             }
 
         });
+        btn_remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                database.child("product").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Set<String> setCateProduct = new HashSet<>();
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 
+                            product pr = dataSnapshot.getValue(product.class);
+                            if (pr != null) {
+                                setCateProduct.add(pr.getCategory());
+                            }
+                        }
+                        if(setCateProduct.contains(catex.getName())){
+                            Toast.makeText(AddCategory.this,"Loại sản phẩm này đã được sử dụng, không thể xóa",Toast.LENGTH_SHORT).show();
+                        }else{
+                            database.child("category").child(keyThisCategory).removeValue(new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                    if(error==null){
+                                        hasThisCategory=false;
+                                        title.setText("ADD CATEGORY");
+                                        btn_add.setText("Add Category");
+                                        name.setText("");
+                                        des.setText("");
+                                        btn_remove.setEnabled(false);
+                                        btn_remove.setVisibility(View.GONE);
+                                        Toast.makeText(AddCategory.this,"Loại sản phẩm:"+catex.getName() + " đã được xóa",Toast.LENGTH_SHORT).show();
+                                    }else{
+                                        Toast.makeText(AddCategory.this,"Loại sản phẩm: "+catex.getName() + " chưa được xóa thành công",Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(AddCategory.this,"Loại sản phẩm: "+catex.getName() + " chưa được xóa thành công",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     private void clearData() {
-        name.setText("");
-        des.setText("");
+        if(hasThisCategory){
+            name.setText(catex.getName());
+            des.setText(catex.getDescrip());
+        }else{
+            name.setText("");
+            des.setText("");
+        }
     }
 
     private boolean check() {
+        if(list_name.contains(name.getText().toString().trim())&&!hasThisCategory){
+            name.setError("Tên loại sản phẩm bị trùng");
+            name.requestFocus();
+            return false;
+        }
+        if(hasThisCategory){
+            listTemp =  new ArrayList<>(list_name);
+            listTemp.remove(catex.getName());
+            if(listTemp.contains(name.getText().toString().trim())){
+                name.setError("Tên loại sản phẩm bị trùng");
+                name.requestFocus();
+                return false;
+            }
+            listTemp=null;
+        }
+
         if(name.getText().toString().trim().isEmpty()){
             name.setError("Chưa nhâp tên loại sản phẩm");
             name.requestFocus();

@@ -3,6 +3,7 @@ package com.example.shop_app;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,17 +24,18 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ProductDetail extends AppCompatActivity {
     ImageButton btn_back;
     ImageView img;
-    TextView name, des, cate, color, material, origin, price;
+    TextView name, des, cate, color, material, origin, price, state
+            , stockM, stockL, stockXL, stockXXL;
     Chip chip_fix, chipM, chipL, chipXL, chipXXL;
     product pr;
-    String pr_id;
-    List<String> size = new ArrayList<>();
+    Map<String, Integer> size = new HashMap<>();
     //ValueEventListener mvalueEventListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +61,14 @@ public class ProductDetail extends AppCompatActivity {
         chipL = findViewById(R.id.productDetail_L);
         chipXL = findViewById(R.id.productDetail_XL);
         chipXXL = findViewById(R.id.productDetail_XXL);
+        state = findViewById(R.id.productDetail_state);
+        stockM = findViewById(R.id.prDetail_stockM);
+        stockL = findViewById(R.id.prDetail_stockL);
+        stockXL = findViewById(R.id.prDetail_stockXL);
+        stockXXL = findViewById(R.id.prDetail_stockXXL);
     }
 
+    @SuppressLint("SetTextI18n")
     private void setData() {
 //        Intent intent = getIntent();
 //        if(intent != null && intent.hasExtra("product")) {
@@ -72,8 +80,7 @@ public class ProductDetail extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         if(bundle==null) return;
         pr =  (product) bundle.get("product");
-        Log.d("product", pr.toString());
-        //assert pr != null;
+        assert pr != null;
         name.setText(pr.getName());
         Glide.with(ProductDetail.this).load(pr.getImage()).into(img);
         des.setText(pr.getDescription());
@@ -82,13 +89,19 @@ public class ProductDetail extends AppCompatActivity {
         material.setText(pr.getMaterial());
         origin.setText(pr.getOrigin());
         price.setText(String.valueOf(pr.getPrice()));
+        if(pr.isState()){
+            state.setText("      State:  Đang bán");
+        }else {
+            state.setText("      State:  Đang khóa");
+        }
         DatabaseReference database = FirebaseDatabase.getInstance().getReference("productSize/"+pr.getId());
         database.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                     String key = childSnapshot.getKey();
-                    size.add(key);
+                    int value = childSnapshot.getValue(Integer.class);
+                    size.put(key,value);
                 }
                 setSize();
             }
@@ -101,19 +114,23 @@ public class ProductDetail extends AppCompatActivity {
     }
 
     private void setSize() {
-        for (String s: size) {
+        for (String s: size.keySet()) {
             switch (s){
                 case "M":
                     chipM.setChecked(true);
+                    stockM.setText(String.valueOf(size.get("M")));
                     break;
                 case "L":
                     chipL.setChecked(true);
+                    stockL.setText(String.valueOf(size.get("L")));
                     break;
                 case "XL":
                     chipXL.setChecked(true);
+                    stockXL.setText(String.valueOf(size.get("XL")));
                     break;
                 case "XXL":
                     chipXXL.setChecked(true);
+                    stockXXL.setText(String.valueOf(size.get("XXL")));
                     break;
             }
         }

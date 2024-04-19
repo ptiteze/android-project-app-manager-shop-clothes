@@ -93,7 +93,7 @@
                                     app:chipIconTint="@color/black" />
 
                                 <com.google.android.material.chip.Chip
-                                    android:id="@+id/product_discountOnProduct"
+                                    android:id="@+id/product_discountOnOrder"
                                     style="@style/Widget.MaterialComponents.Chip.Action"
                                     android:layout_width="wrap_content"
                                     android:layout_height="match_parent"
