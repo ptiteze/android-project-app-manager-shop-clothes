@@ -62,7 +62,7 @@ public class productAdapter extends RecyclerView.Adapter<productAdapter.ViewHold
         Glide.with(context).load(product_temp.getImage()).into(holder.product_view);
         holder.name.setOnClickListener(view -> pass(product_temp));
         holder.btn_import.setOnClickListener(view -> addToImportCart(product_temp));
-        holder.btn_demo.setOnClickListener(view -> addtoDemo(product_temp));
+        //holder.btn_demo.setOnClickListener(view -> addtoDemo(product_temp));
     }
 
     private void addtoDemo(product productTemp) {

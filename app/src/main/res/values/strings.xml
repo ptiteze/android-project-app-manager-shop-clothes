@@ -7,9 +7,15 @@
     <string name="wellcome">WELLCOME</string>
     <string-array name="spinner_values">
         <item>TẤT CẢ</item>
-        <item>CHƯA XÁC NHẬN</item>
+        <item>ĐANG XỬ LÝ</item>
         <item>ĐANG GIAO</item>
-        <item>XÁC NHẬN THANH TOÁN</item>
+    </string-array>
+    <string-array name="spinner_values_list">
+        <item>TẤT CẢ</item>
+        <item>ĐANG XỬ LÝ</item>
+        <item>ĐANG GIAO</item>
+        <item>ĐÃ NHẬN</item>
+        <item>ĐÃ HỦY</item>
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_category_fragment">Hello category fragment</string>

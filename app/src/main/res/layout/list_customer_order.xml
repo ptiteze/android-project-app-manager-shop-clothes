@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ListOrder">
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="LIST ORDER BY CUSTOMER"
+        android:textAlignment="center"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="Họ và tên:  "
+            android:gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/listOrderCustomer_name"
+            android:layout_width="220dp"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent"
+            />
+    </LinearLayout>
+    <Spinner
+        android:id="@+id/listOrderCustomer_spin"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="4dp"
+        android:entries="@array/spinner_values_list"
+        android:background="@drawable/outer_border"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="2dp"
+        android:background="#000000" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/listOrderCustomer_show"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"/>
+</LinearLayout>

@@ -1,5 +1,6 @@
 package com.example.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -7,26 +8,36 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.model.order;
+import com.example.model.product;
 import com.example.model.user;
 import com.example.shop_app.Main_menu;
 import com.example.shop_app.R;
+import com.example.shop_app.ListOrder;
+import com.example.shop_app.orderAdapter;
+import com.example.shop_app.orderDetail;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
@@ -39,6 +50,10 @@ public class HomeFragment extends Fragment {
     RecyclerView show;
     View view;
     private Main_menu mainMenu;
+    List<order> orderList = new ArrayList<>();
+    List<order> orderListTemp = new ArrayList<>();
+    private orderAdapter adapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -93,10 +108,84 @@ public class HomeFragment extends Fragment {
             }
 
         });
+        database.child("order").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                orderList.clear();
+                for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
+                    order o = dataSnapshot.getValue(order.class);
+                    if(o!=null){
+                        if(o.getStatus()==1||o.getStatus()==2){
+                            orderList.add(o);
+                        }
+                    }
+                }
+                showOrder(orderList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                error.toException();
+            }
+        });
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void showOrder(List<order> orderShow) {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
+        adapter = new orderAdapter(orderShow,view.getContext());
+        adapter.notifyDataSetChanged();
+        show.setAdapter(adapter);
+        show.setLayoutManager(linearLayoutManager);
     }
 
     private void setEvent() {
+        notifications.setOnClickListener(view -> {
+            Intent intent = new Intent(view.getContext(), ListOrder.class);
+            startActivity(intent);
+        });
+        spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i){
+                    case 1:
+                        orderListTemp.clear();
+                        for (order o: orderList) {
+                            if (o.getStatus() == 1) {
+                                orderListTemp.add(o);
+                            }
+                        }
+                        showOrder(orderListTemp);
+                        break;
+                    case 2:
+                        orderListTemp.clear();
+                        for (order o: orderList) {
+                            if (o.getStatus() == 2) {
+                                orderListTemp.add(o);
+                            }
+                        }
+                        showOrder(orderListTemp);
+                        break;
+                    default:
+                        showOrder(orderList);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                showOrder(orderList);
+            }
+        });
+    }
+
+    private static void toDetail(View view, order o) {
+        Intent intent = new Intent(view.getContext(), orderDetail.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("order", o);
+        intent.putExtras(bundle);
+        view.getContext().startActivity(intent);
     }
 
     private void setControl() {

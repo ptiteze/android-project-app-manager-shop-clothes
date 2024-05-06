@@ -3,6 +3,7 @@ package com.example.fragment;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import com.example.model.category;
 import com.example.model.importOrder;
 import com.example.model.product;
+import com.example.model.saveImport;
 import com.example.model.size_stock;
 import com.example.shop_app.AddCategory;
 import com.example.shop_app.Category;
@@ -28,10 +30,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +117,32 @@ public class OrderFragment extends Fragment {
                     databaseI.child("product").child(pi.getId()).child("stock")
                             .setValue(pi.getStock());
                 }
+                saveImport si = new saveImport();
+                Date date  = new Date();
+                String id = database.child("orderImport").push().getKey();
+                si.setId(id);
+                si.setTotalPrice(sumP);
+                si.setCreateAt(String.valueOf(date.getDate()));
+                database.child("orderImport").child(si.getId()).setValue(si);
+                DatabaseReference iRef = FirebaseDatabase.getInstance().getReference("importProduct");
+                DatabaseReference importRef = FirebaseDatabase.getInstance().getReference("importDetail/"+si.getId());
+                iRef.runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                        Object data = currentData.getValue();
+                        importRef.setValue(data);
+                        return Transaction.success(currentData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                        if (error != null) {
+                            // Xử lý lỗi
+                            error.toException();
+                        }
+                    }
+                });
                 database.child("importProduct").setValue(null);
                 Toast.makeText(view.getContext(),"Nhập sản phẩm hoàn tất",Toast.LENGTH_SHORT).show();
                 listShow.clear();

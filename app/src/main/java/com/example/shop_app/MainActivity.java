@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.model.account;
 import com.example.model.product;
 import com.example.model.size_stock;
+import com.example.model.user;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,6 +22,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -46,7 +48,11 @@ public class MainActivity extends AppCompatActivity {
 //        size.put("M",5);
 //        size.put("XL",5);
 //        size_stock ss = new size_stock("SP0001",size);
-//        database.child("productSize").child(ss.getProduct_id()).setValue(ss.getSize_stock());
+//        Date date = new Date();
+//        user us = new user("KH0001","Nghĩa", date.toString(), "nam", "Khánh Hòa"
+//                            ,"0293454332", "https://inanhtuankhanh.vn/wp-content/uploads/2020/11/ok-1--scaled.jpg",
+//                            "Nghia@gmail.com", "ADMIN");
+//        database.child("user").child("KH0001").setValue(us);
     }
 
     private void setEvent() {
