@@ -1,8 +1,6 @@
 package com.example.model;
 
 
-import java.util.Timer;
-
 public class discountOnProduct {
     private String id;
     private String name;
@@ -10,15 +8,25 @@ public class discountOnProduct {
     private String timeEnd;
     private  int percent;
     private  String des;
+    private  boolean status;
 
 
-    public discountOnProduct(String id, String name, String timeStart, String timeEnd, int percent, String des) {
+    public discountOnProduct(String id, String name, String timeStart, String timeEnd, int percent, String des, boolean status) {
         this.id = id;
         this.name = name;
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
         this.percent = percent;
         this.des = des;
+        this.status = status;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     public discountOnProduct() {

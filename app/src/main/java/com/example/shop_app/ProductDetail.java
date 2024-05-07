@@ -5,7 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -22,6 +28,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.collection.LLRBNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +39,7 @@ public class ProductDetail extends AppCompatActivity {
     ImageButton btn_back;
     ImageView img;
     TextView name, des, cate, color, material, origin, price, state
-            , stockM, stockL, stockXL, stockXXL;
+            , stockM, stockL, stockXL, stockXXL, importP;
     Chip chip_fix, chipM, chipL, chipXL, chipXXL;
     product pr;
     Map<String, Integer> size = new HashMap<>();
@@ -56,6 +63,7 @@ public class ProductDetail extends AppCompatActivity {
         material = findViewById(R.id.productDetail_material);
         origin = findViewById(R.id.productDetail_origin);
         price = findViewById(R.id.productDetail_price);
+        importP = findViewById(R.id.productDetail_importPrice);
         chip_fix = findViewById(R.id.productDetail_complete);
         chipM = findViewById(R.id.productDetail_M);
         chipL = findViewById(R.id.productDetail_L);
@@ -88,7 +96,18 @@ public class ProductDetail extends AppCompatActivity {
         color.setText(pr.getColor());
         material.setText(pr.getMaterial());
         origin.setText(pr.getOrigin());
-        price.setText(String.valueOf(pr.getPrice()));
+        if(pr.getDiscountP()==0){
+            price.setText(String.valueOf(pr.getPrice()));
+        }else{
+            SpannableString spannableString1 = new SpannableString(pr.getPrice()+".VND");
+            spannableString1.setSpan(new StrikethroughSpan(), 0, spannableString1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            int finalprice = pr.getPrice() - (pr.getPrice()*pr.getDiscountP()/100);
+            SpannableString spannableString2 = new SpannableString(finalprice+"");
+            spannableString2.setSpan(new ForegroundColorSpan(Color.RED), 0, spannableString2.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            CharSequence combinedText = TextUtils.concat(spannableString1, " -> ", spannableString2);
+            price.setText(combinedText);
+        }
+        importP.setText(String.valueOf(pr.getImportPrice()));
         if(pr.isState()){
             state.setText("      State:  Đang bán");
         }else {

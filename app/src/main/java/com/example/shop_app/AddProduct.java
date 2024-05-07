@@ -322,7 +322,7 @@ public class AddProduct extends AppCompatActivity {
         if (chip_XXL.isChecked()&&chip_XXL.isEnabled()) size.put("XXL",0);
         database.child("productSize").child(pid).setValue(size);
         product product_update = new product(pid,pname,pcate,pmaterial,porigin,pdes,pcolor
-                ,pprice,pImportPrice,pr.getStock(),pr.getImage(),pr.isState());
+                ,pprice,pImportPrice,0,pr.getStock(),pr.getImage(),pr.isState());
         database.child("product").child(pid).setValue(product_update).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -536,7 +536,7 @@ public class AddProduct extends AppCompatActivity {
         if (chip_XXL.isChecked()&&chip_XXL.isEnabled()) size.put("XXL",0);
         database.child("productSize").child(pid).setValue(size);
         product product_update = new product(pid,pname,pcate,pmaterial,porigin,pdes,pcolor
-                ,pprice,pImportPrice,pr.getStock(),objImgur.getLink(),pr.isState());
+                ,pprice,pImportPrice,0,pr.getStock(),objImgur.getLink(),pr.isState());
         database.child("product").child(pid).setValue(product_update).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -575,7 +575,7 @@ public class AddProduct extends AppCompatActivity {
         product_nextID = database.child("product").push().getKey();
         database.child("productSize").child(product_nextID).setValue(size_stock);
         product product_add = new product(product_nextID,pname,pcate,pmaterial,porigin,pdes,pcolor
-                ,pprice,pImportPrice,0,objImgur.getLink(),true);
+                ,pprice,pImportPrice,0,0,objImgur.getLink(),true);
         database.child("product").child(product_nextID).setValue(product_add).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

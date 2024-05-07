@@ -3,7 +3,13 @@ package com.example.shop_app;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,8 +63,18 @@ public class productAdapter extends RecyclerView.Adapter<productAdapter.ViewHold
             nameState = product_temp.getName() +"\n Đã khóa";
         }
         holder.name.setText(nameState);
-        holder.cate.setText(product_temp.getCategory());
-        holder.pri_stock.setText(product_temp.getPrice()+".VND - "+ product_temp.getStock());
+        holder.cate.setText(product_temp.getCategory()+" - "+ product_temp.getStock());
+        if(product_temp.getDiscountP()==0){
+            holder.pri_stock.setText(product_temp.getPrice()+".VND");
+        }else{
+            SpannableString spannableString1 = new SpannableString(product_temp.getPrice()+".VND");
+            spannableString1.setSpan(new StrikethroughSpan(), 0, spannableString1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            int finalprice = product_temp.getPrice() - (product_temp.getPrice()*product_temp.getDiscountP()/100);
+            SpannableString spannableString2 = new SpannableString(finalprice+".VND");
+            spannableString2.setSpan(new ForegroundColorSpan(Color.RED), 0, spannableString2.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            CharSequence combinedText = TextUtils.concat(spannableString1, " -> ", spannableString2);
+            holder.pri_stock.setText(combinedText);
+        }
         Glide.with(context).load(product_temp.getImage()).into(holder.product_view);
         holder.name.setOnClickListener(view -> pass(product_temp));
         holder.btn_import.setOnClickListener(view -> addToImportCart(product_temp));

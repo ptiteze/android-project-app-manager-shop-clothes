@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -27,18 +26,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.TimeZone;
 
 public class AddDiscountOnProduct extends AppCompatActivity {
@@ -50,9 +44,10 @@ public class AddDiscountOnProduct extends AppCompatActivity {
     ListView listProduct, listProductDiscont;
     ChildEventListener mChildEventListener;
     List<String> listPD = new ArrayList<>();
+    List<String> listPDTrue = new ArrayList<>();
     // id, name
-    List<String> list_pr_key = new ArrayList<>();
-    List<String> list_pr_val= new ArrayList<>();
+    List<String> list_pr_key = new ArrayList<>(); // pr Id
+    List<String> list_pr_val= new ArrayList<>();    //pr name
     ArrayAdapter<String> adapterD;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +62,7 @@ public class AddDiscountOnProduct extends AppCompatActivity {
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                product pr = new product();
-                pr = snapshot.getValue(product.class);
+                product pr = snapshot.getValue(product.class);
                 if(pr!=null){
                     list_pr_key.add(pr.getId());
                     list_pr_val.add(pr.getName());
@@ -98,6 +92,42 @@ public class AddDiscountOnProduct extends AppCompatActivity {
         };
         Query query = FirebaseDatabase.getInstance().getReference("product");
         query.addChildEventListener(mChildEventListener);
+        DatabaseReference databases = FirebaseDatabase.getInstance().getReference();
+        database.child("discount").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<String> listDTrue = new ArrayList<>();
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    discountOnProduct dp = dataSnapshot.getValue(discountOnProduct.class);
+                    if(dp!=null&&dp.isStatus()){
+                        //Log.d("id discount", dp.getId());
+                        listDTrue.add(dp.getId());
+                    }
+                }
+                listPDTrue.clear();
+                for (String key : listDTrue) {
+                    databases.child("discountList").child(key).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                //Log.d("id pr", dataSnapshot.getKey());
+                                listPDTrue.add(dataSnapshot.getKey());
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(AddDiscountOnProduct.this,"không thể kết nối tới dữ liệu",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(AddDiscountOnProduct.this,"không thể kết nối tới dữ liệu",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void showDataProduct(ListView listView) {
@@ -116,10 +146,16 @@ public class AddDiscountOnProduct extends AppCompatActivity {
         tStart = findViewById(R.id.addDiscount_timeStart);
         tEnd = findViewById(R.id.addDiscount_timeEnd);
         btn_tStart = findViewById(R.id.timeStart_btn);
+        btn_tStart.setEnabled(false);
         btn_tEnd = findViewById(R.id.timeEnd_btn);
         btn_back = findViewById(R.id.addDiscount_back);
         listProduct = findViewById(R.id.addDiscount_listProduct);
         listProductDiscont = findViewById(R.id.addDiscount_productDiscount);
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH)+1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        tStart.setText(day+"/"+month+"/"+year);
     }
     private void clearInput() {
         name.setText("");
@@ -193,8 +229,10 @@ public class AddDiscountOnProduct extends AppCompatActivity {
                     discount.setTimeStart(tStart.getText().toString());
                     discount.setTimeEnd(tEnd.getText().toString());
                     discount.setPercent(Integer.valueOf(percent.getText().toString()));
+                    discount.setStatus(true);
                     saveDiscount(discount);
                 }
+                //Log.d("list pr true:", " "+ listPDTrue.size());
             }
         });
     }
@@ -203,6 +241,7 @@ public class AddDiscountOnProduct extends AppCompatActivity {
         List<String> listKey = new ArrayList<>();
         String discount_id = database.child("discount").push().getKey();
         discount.setId(discount_id);
+        int percent = discount.getPercent();
         assert discount_id != null;
         database.child("discount").child(discount_id != null ? discount_id : null).setValue(discount);
         for (String pr: listPD) {
@@ -210,12 +249,15 @@ public class AddDiscountOnProduct extends AppCompatActivity {
         }
         for (String name: listKey) {
             database.child("discountList").child(discount_id).child(name).setValue(1);
+            database.child("product").child(name).child("discountP").setValue(percent);
         }
         clearInput();
+        Toast.makeText(AddDiscountOnProduct.this, "Các sản phẩm đã được giảm giá", Toast.LENGTH_SHORT).show();
     }
 
 
     private boolean checkfalse() {
+        int p = Integer.valueOf(percent.getText().toString());
         if(name.getText().toString().trim().isEmpty()){
             name.setError("Chưa nhâp tên đợt giảm giá");
             name.requestFocus();
@@ -231,16 +273,22 @@ public class AddDiscountOnProduct extends AppCompatActivity {
             des.requestFocus();
             return true;
         }
-        if(tStart.getText().toString().trim().isEmpty()){
-            tStart.setError("Chưa nhâp tên đợt giảm giá");
-            tStart.requestFocus();
+//        if(tStart.getText().toString().trim().isEmpty()){
+//            tStart.setError("Chưa nhâp tên đợt giảm giá");
+//            tStart.requestFocus();
+//            return true;
+//        }
+        if(p<=0||p>100){
+            percent.setError("Tỉ lệ giảm giá không phù hợp");
+            percent.requestFocus();
             return true;
         }
         if(tEnd.getText().toString().trim().isEmpty()){
-            tEnd.setError("Chưa nhâp tên đợt giảm giá");
+            tEnd.setError("Chưa nhâp thời gian kết thúc đợt giảm giá");
             tEnd.requestFocus();
             return true;
         }
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             String tS = tStart.getText().toString().trim();
             String tE = tEnd.getText().toString().trim();
@@ -252,14 +300,14 @@ public class AddDiscountOnProduct extends AppCompatActivity {
                 Calendar dateS = Calendar.getInstance();
                 dateS.setTime(format.parse(tS));
                 Calendar dateE = Calendar.getInstance();
-                dateE.setTime(format.parse(tS));
+                dateE.setTime(format.parse(tE));
 //                Date dateS = format.parse(tS);
 //                Date dateE = format.parse(tS);
 //                if(currentTime.after(dateS)){
 //                    Toast.makeText(AddDiscountOnProduct.this, "thời gian bắt đầu giảm giá phải sau thời gian hiện tại", Toast.LENGTH_SHORT).show();
 //                    return true;
 //                }
-                if(dateE.after(dateS)||tStart.getText().toString().equals(tEnd.getText().toString())){
+                if(!dateE.after(dateS)||tStart.getText().toString().equals(tEnd.getText().toString())){
                     Toast.makeText(AddDiscountOnProduct.this, "thời gian hết giảm giá phải sau thời gian bắt đầu giảm giá", Toast.LENGTH_SHORT).show();
                     return true;
                 }
@@ -273,6 +321,13 @@ public class AddDiscountOnProduct extends AppCompatActivity {
         if(listPD.isEmpty()){
             Toast.makeText(AddDiscountOnProduct.this, "Chưa chọn sản phẩm giảm giá", Toast.LENGTH_SHORT).show();
             return true;
+        }
+        for (String value : listPD) {
+            if (listPDTrue.contains(list_pr_key.get(list_pr_val.indexOf(value)))){
+                Toast.makeText(AddDiscountOnProduct.this, "sản phẩm: "+
+                        value+" đang được áp dụng ưu đãi khác", Toast.LENGTH_SHORT).show();
+                return true;
+            }
         }
         return false;
     }

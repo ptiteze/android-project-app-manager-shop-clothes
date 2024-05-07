@@ -207,6 +207,33 @@
                     android:textSize="15sp"
                     android:textStyle="bold" />
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:text="ImportPrice*"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/productDetail_importPrice"
+                    android:layout_width="240dp"
+                    android:layout_height="match_parent"
+                    android:textAlignment="center" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="VNĐ"
+                    android:textAlignment="center"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="25dp"

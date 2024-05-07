@@ -92,6 +92,7 @@ public class AddDiscountOnOrder extends AppCompatActivity {
     }
 
     private boolean checkfalse() {
+        int p = Integer.valueOf(percent.getText().toString());
         if(name.getText().toString().trim().isEmpty()){
             name.setError("Chưa nhâp tên đợt giảm giá");
             name.requestFocus();
@@ -148,6 +149,11 @@ public class AddDiscountOnOrder extends AppCompatActivity {
         }
         if(percent.getText().toString().equals("")){
             percent.setError("Chưa nhập tỉ lệ giảm");
+            percent.requestFocus();
+            return true;
+        }
+        if(p<=0||p>100){
+            percent.setError("Tỉ lệ giảm giá không phù hợp");
             percent.requestFocus();
             return true;
         }
