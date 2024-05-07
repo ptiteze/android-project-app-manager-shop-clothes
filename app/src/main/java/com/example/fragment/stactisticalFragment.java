@@ -26,6 +26,7 @@ import com.example.model.size_stock;
 import com.example.shop_app.AddProduct;
 import com.example.shop_app.DiscountOnOrder;
 import com.example.shop_app.OrderActivity;
+import com.example.shop_app.OrderDayOfActivity;
 import com.example.shop_app.ProductStatisticActivity;
 import com.example.shop_app.R;
 import com.google.android.material.chip.Chip;
@@ -66,7 +67,7 @@ public class stactisticalFragment extends Fragment {
             startActivity(intent);
         });
         block.setOnClickListener(view1 -> {
-            Intent intent = new Intent(view.getContext(), OrderActivity.class);
+            Intent intent = new Intent(view.getContext(), OrderDayOfActivity.class);
             startActivity(intent);
         });
     }

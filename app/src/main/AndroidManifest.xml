@@ -35,6 +35,10 @@
         <activity
             android:name=".OrderActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".OrderDayOfActivity"
+            android:exported="false" />
         <activity
             android:name=".ProductStatisticActivity"
             android:exported="false" />
