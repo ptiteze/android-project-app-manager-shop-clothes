@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.model.discountOnOrder;
+import com.example.model.discountOnProduct;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
@@ -29,7 +30,8 @@ public class AddDiscountOnOrder extends AppCompatActivity {
     Chip btn_add, btn_cancel, btn_remove;
     ImageButton btn_back, btn_tStart, btn_tEnd;
     EditText name, des, percent, condition;
-    ChildEventListener mChildEventListener;
+    discountOnOrder disc;
+    boolean updateState = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,17 @@ public class AddDiscountOnOrder extends AppCompatActivity {
                 discount.setCondition(Integer.parseInt(condition.getText().toString()));
                 saveDiscount(discount);
             }
+        });
+        btn_remove.setOnClickListener(view -> {
+            Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH)+1;
+            int day = calendar.get(Calendar.DAY_OF_MONTH)-1;
+            String date = day+"/"+month+"/"+year;
+            disc.setTimeEnd(date);
+            database.child("discountOnOrder").child(disc.getId()).setValue(disc);
+            Toast.makeText(AddDiscountOnOrder.this,"Xóa thành công",Toast.LENGTH_SHORT).show();
+            btn_remove.setEnabled(false);
         });
     }
 
@@ -178,6 +191,34 @@ public class AddDiscountOnOrder extends AppCompatActivity {
 //        tEnd.setText(String.format("%d/%d/%d", day, (month +1), year));
     }
     private void setData() {
+        Bundle bundle = getIntent().getExtras();
+        if(bundle==null){
+            updateState = false;
+        }else{
+            disc =  (discountOnOrder) bundle.get("discount");
+            assert disc != null;
+            updateState = true;
+            setEneble(disc);
+        }
+    }
+
+    private void setEneble(discountOnOrder disc) {
+        title.setText("VIEW DISCOUNT");
+        name.setText(disc.getName());
+        des.setText(disc.getDes());
+        percent.setText(disc.getPercent()+"");
+        tStart.setText(disc.getTimeStart());
+        tEnd.setText(disc.getTimeEnd());
+        condition.setText(disc.getCondition()+"");
+        condition.setEnabled(false);
+        btn_add.setEnabled(false);
+        btn_cancel.setEnabled(false);
+        btn_tEnd.setEnabled(false);
+        name.setEnabled(false);
+        des.setEnabled(false);
+        percent.setEnabled(false);
+        btn_remove.setVisibility(View.VISIBLE);
+        btn_remove.setEnabled(true);
     }
 
     private void setControl() {

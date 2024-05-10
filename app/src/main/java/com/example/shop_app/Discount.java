@@ -9,12 +9,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.health.TimerStat;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.model.category;
 import com.example.model.discountOnProduct;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.ChildEventListener;
@@ -42,6 +42,7 @@ public class Discount extends AppCompatActivity {
     ListView show;
     FloatingActionButton btn_add;
     ChildEventListener mChildEventListener;
+    List<discountOnProduct> listDiscountP = new ArrayList<>();
     List<String> list_discount = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +59,6 @@ public class Discount extends AppCompatActivity {
     }
 
     private void setData() {
-
-
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -75,11 +74,12 @@ public class Discount extends AppCompatActivity {
                         } catch (ParseException e) {
                             throw new RuntimeException(e);
                         }
-                        if(dateE.after(currentTime)){
+                        if(dateE.after(currentTime)&&discount.isStatus()){
                          String data="";
                          data = "Khuyến mãi: "+ discount.getName() + "\n Thời gian"
                                  + discount.getTimeStart() + " - " + discount.getTimeEnd()
                                  + "\n Khuyến mãi: " + discount.getPercent() + " %.";
+                         listDiscountP.add(discount);
                          list_discount.add(data);
                      } else if (discount.isStatus()) {
                             changeStatusDiscount(discount);
@@ -139,6 +139,18 @@ public class Discount extends AppCompatActivity {
                 Intent addDiscount = new Intent(Discount.this, AddDiscountOnProduct.class);
                 //add.putExtra("user_id", acc.getUser_id());
                 startActivity(addDiscount);
+            }
+        });
+        show.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                discountOnProduct discount = listDiscountP.get(i);
+                Intent detail = new Intent(Discount.this,AddDiscountOnProduct.class);
+                Bundle bundle = new Bundle();
+                //Log.d("product", productTemp.toString());
+                bundle.putSerializable("discount", discount);
+                detail.putExtras(bundle);
+                startActivity(detail);
             }
         });
     }

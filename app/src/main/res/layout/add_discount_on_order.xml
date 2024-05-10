@@ -177,19 +177,7 @@
                     android:id="@+id/timeEnd_btnOO"
                     android:src="@drawable/calendar"/>
             </LinearLayout>
-            <com.google.android.material.chip.Chip
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/addDiscountOO_remove"
-                android:layout_margin="10dp"
-                android:layout_gravity="center"
-                android:text="    Remove     "
-                android:background="#8C5D63"
-                style="@style/Widget.MaterialComponents.Chip.Action"
-                android:textAlignment="center"
-                android:visibility="invisible"
-                android:enabled="false"
-                app:chipIcon="@drawable/remove"/>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
@@ -221,6 +209,19 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>
+            <com.google.android.material.chip.Chip
+                android:id="@+id/addDiscountOO_remove"
+                style="@style/Widget.MaterialComponents.Chip.Action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:background="#8C5D63"
+                android:enabled="false"
+                android:text="    Remove     "
+                android:textAlignment="center"
+                android:visibility="invisible"
+                app:chipIcon="@drawable/remove" />
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="300dp"/>
