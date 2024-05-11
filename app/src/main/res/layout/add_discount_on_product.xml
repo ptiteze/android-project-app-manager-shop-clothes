@@ -176,19 +176,7 @@
                     android:id="@+id/timeEnd_btn"
                     android:src="@drawable/calendar"/>
             </LinearLayout>
-            <com.google.android.material.chip.Chip
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/addDiscount_remove"
-                android:layout_margin="10dp"
-                android:layout_gravity="center"
-                android:text="    Remove     "
-                android:background="#8C5D63"
-                style="@style/Widget.MaterialComponents.Chip.Action"
-                android:textAlignment="center"
-                android:visibility="invisible"
-                android:enabled="false"
-                app:chipIcon="@drawable/remove"/>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
@@ -207,6 +195,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:id="@+id/addDiscount_listProduct"/>
+            <com.google.android.material.chip.Chip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/addDiscount_remove"
+                android:layout_margin="10dp"
+                android:layout_gravity="center"
+                android:text="    Remove     "
+                android:background="#8C5D63"
+                style="@style/Widget.MaterialComponents.Chip.Action"
+                android:textAlignment="center"
+                android:visibility="invisible"
+                android:enabled="false"
+                app:chipIcon="@drawable/remove"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="300dp"/>
         </LinearLayout>
     </ScrollView>
 

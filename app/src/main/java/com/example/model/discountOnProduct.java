@@ -1,7 +1,9 @@
 package com.example.model;
 
 
-public class discountOnProduct {
+import java.io.Serializable;
+
+public class discountOnProduct implements Serializable {
     private String id;
     private String name;
     private String timeStart;

@@ -32,7 +32,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 public class AddDiscountOnProduct extends AppCompatActivity {
@@ -40,15 +42,19 @@ public class AddDiscountOnProduct extends AppCompatActivity {
     TextView title, tStart, tEnd;
     Chip btn_add, btn_cancel, btn_remove;
     ImageButton btn_back, btn_tStart, btn_tEnd;
+    boolean updateState = false;
     EditText name, des, percent;
-    ListView listProduct, listProductDiscont;
+    ListView listProduct,
+            listProductDiscont;
     ChildEventListener mChildEventListener;
     List<String> listPD = new ArrayList<>();
     List<String> listPDTrue = new ArrayList<>();
+    List<String> listPDUpdate = new ArrayList<>();
     // id, name
     List<String> list_pr_key = new ArrayList<>(); // pr Id
     List<String> list_pr_val= new ArrayList<>();    //pr name
     ArrayAdapter<String> adapterD;
+    discountOnProduct disc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +65,15 @@ public class AddDiscountOnProduct extends AppCompatActivity {
     }
 
     private void setData() {
+        Bundle bundle = getIntent().getExtras();
+        if(bundle==null){
+            updateState = false;
+        }else{
+            disc =  (discountOnProduct) bundle.get("discount");
+            assert disc != null;
+            updateState = true;
+            setEneble(disc);
+        }
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -68,6 +83,27 @@ public class AddDiscountOnProduct extends AppCompatActivity {
                     list_pr_val.add(pr.getName());
                 }
                 showDataProduct(listProduct);
+                if(updateState){
+                    database.child("discountList").child(disc.getId()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                //Log.d("id pr", dataSnapshot.getKey());
+                                listPDUpdate.add(dataSnapshot.getKey());
+                            }
+                            Set<String> setName = new HashSet<>();
+                            for (String key: listPDUpdate) {
+                                setName.add(list_pr_val.get(list_pr_key.indexOf(key)));
+                            }
+                            Log.d("id pr", listPDUpdate.size()+"  "+list_pr_val.size());
+                            ShowListProductDiscount(new ArrayList<>(setName));
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(AddDiscountOnProduct.this,"không thể kết nối tới dữ liệu",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
 
             @Override
@@ -128,6 +164,27 @@ public class AddDiscountOnProduct extends AppCompatActivity {
                 Toast.makeText(AddDiscountOnProduct.this,"không thể kết nối tới dữ liệu",Toast.LENGTH_SHORT).show();
             }
         });
+
+    }
+
+    private void setEneble(discountOnProduct disc) {
+        title.setText("VIEW DISCOUNT");
+        name.setText(disc.getName());
+        des.setText(disc.getDes());
+        percent.setText(disc.getPercent()+"");
+        tStart.setText(disc.getTimeStart());
+        tEnd.setText(disc.getTimeEnd());
+        btn_add.setEnabled(false);
+        btn_cancel.setEnabled(false);
+        btn_tEnd.setEnabled(false);
+        name.setEnabled(false);
+        des.setEnabled(false);
+        percent.setEnabled(false);
+        btn_remove.setVisibility(View.VISIBLE);
+        btn_remove.setEnabled(true);
+        listProduct.setEnabled(false);
+        listProductDiscont.setEnabled(false);
+
     }
 
     private void showDataProduct(ListView listView) {
@@ -189,7 +246,7 @@ public class AddDiscountOnProduct extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if(listPD.isEmpty()||(!listPD.contains(list_pr_val.get(i)))) {
                     listPD.add(list_pr_val.get(i));
-                    ShowListProductDiscount();
+                    ShowListProductDiscount(listPD);
                 }
             }
         });
@@ -228,11 +285,20 @@ public class AddDiscountOnProduct extends AppCompatActivity {
                     discount.setDes(des.getText().toString().trim());
                     discount.setTimeStart(tStart.getText().toString());
                     discount.setTimeEnd(tEnd.getText().toString());
-                    discount.setPercent(Integer.valueOf(percent.getText().toString()));
+                    discount.setPercent(Integer.parseInt(percent.getText().toString()));
                     discount.setStatus(true);
                     saveDiscount(discount);
                 }
                 //Log.d("list pr true:", " "+ listPDTrue.size());
+            }
+        });
+        btn_remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                disc.setStatus(false);
+                database.child("discount").child(disc.getId()).setValue(disc);
+                Toast.makeText(AddDiscountOnProduct.this,"Xóa thành công",Toast.LENGTH_SHORT).show();
+                btn_remove.setEnabled(false);
             }
         });
     }
@@ -331,8 +397,8 @@ public class AddDiscountOnProduct extends AppCompatActivity {
         }
         return false;
     }
-    private void ShowListProductDiscount() {
-        adapterD = new ArrayAdapter(AddDiscountOnProduct.this, android.R.layout.simple_list_item_1,listPD);
+    private void ShowListProductDiscount(List<String> listPDs) {
+        adapterD = new ArrayAdapter(AddDiscountOnProduct.this, android.R.layout.simple_list_item_1, listPDs);
         listProductDiscont.setAdapter(adapterD);
     }
 }

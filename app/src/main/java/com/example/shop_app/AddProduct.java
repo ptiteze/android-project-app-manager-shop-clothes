@@ -75,7 +75,7 @@ public class AddProduct extends AppCompatActivity {
             price,
             improtPrice;
     TextView title;
-    boolean updateState = false, update_img = false;
+    boolean updateState = false;
     private String product_nextID = "SP";
     Map<String, Integer> size = new HashMap<>();
     product pr;

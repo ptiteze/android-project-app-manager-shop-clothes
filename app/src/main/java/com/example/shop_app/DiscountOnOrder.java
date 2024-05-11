@@ -7,10 +7,12 @@ import androidx.appcompat.widget.SearchView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.model.discountOnOrder;
+import com.example.model.discountOnProduct;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +34,7 @@ public class DiscountOnOrder extends AppCompatActivity {
     ListView show;
     FloatingActionButton btn_add;
     List<String> list_discount = new ArrayList<>();
+    List<discountOnOrder> listDiscountO = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +70,7 @@ public class DiscountOnOrder extends AppCompatActivity {
                                         + "\n Khuyến mãi: " + discount.getPercent() + " %."
                                         + " Cho đơn từ: "+discount.getCondition();
                                 list_discount.add(data);
+                                listDiscountO.add(discount);
                             }
                         }
                     }
@@ -94,6 +98,17 @@ public class DiscountOnOrder extends AppCompatActivity {
                 Intent addDiscount = new Intent(DiscountOnOrder.this, AddDiscountOnOrder.class);
                 //add.putExtra("user_id", acc.getUser_id());
                 startActivity(addDiscount);
+            }
+        });
+        show.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                discountOnOrder discount = listDiscountO.get(i);
+                Intent detail = new Intent(DiscountOnOrder.this,AddDiscountOnOrder.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("discount", discount);
+                detail.putExtras(bundle);
+                startActivity(detail);
             }
         });
     }
